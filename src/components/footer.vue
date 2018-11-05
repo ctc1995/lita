@@ -71,6 +71,7 @@ export default {
   left: 0;
   z-index: 99999;
   .tab-item{
+    color: #bbb;
     flex: 1;
     display: flex;
     flex-direction: column;

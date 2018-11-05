@@ -4,31 +4,28 @@
     <div class="userinfo">
       <!-- <img class="userinfo-avatar" v-if="userInfo.avatarUrl" :src="userInfo.avatarUrl" background-size="cover" /> -->
       <div class="userinfo-avatar">
+        <img class="userinfo-avatar" :src="userInfo.headavatar" background-size="cover" />
         <!-- <open-data type="userAvatarUrl"></open-data> -->
       </div>
       <div class="userinfo-nickname">
         <!-- <card :text="nickName"></card> -->
+        <p class="card">
+          {{userInfo.nickname}}
+        </p>
         <!-- <open-data type="userNickName"></open-data> -->
         <!-- <card :text="rankName" :textColor="'#FFD100'" :fontSize="14"></card> -->
         <p class="card" style="color: #FFD100; font-size:14px">
-          {{rankName}}
+          {{userInfo.rank_id == 0 ? '客户' : userInfo.rank_id == 1 ? '会员' : '代理人'}}
         </p>
       </div>
       <span class="signin" @click="signinFunc()">{{signin}}</span>
     </div>
     <!-- 轮播图 -->
-    <!-- <swiper  class="carousel"
-      :indicator-dots="indicatorDots"
-      :autoplay="autoplay"
-      :interval="interval"
-      :duration="duration"
-      :circular="circular">
-      <block v-for="(imgItem,index) in imgUrls" :key="index">
-        <swiper-item>
-          <image :src="imgItem.src" class="slide-image" width="355" height="150"/>
-        </swiper-item>
-      </block>
-    </swiper> -->
+    <el-carousel height="100%" class="carousel" :interval="interval">
+      <el-carousel-item v-for="(imgItem,index) in imgUrls" :key="index">
+        <img :src="imgItem.src" class="slide-image"/>
+      </el-carousel-item>
+    </el-carousel>
     <!-- 导航 -->
     <div class="navbar">
       <div class="navbar-item" v-for="(navBarItem, index) in navBars" :key="index" @click="getUrl2(navBarItem.href)">
@@ -100,19 +97,10 @@
     </div>
     <!-- 弹出卡片 -->
     <!-- <div class="modelCard" v-if="cardShow & allShow"> -->
-    <!-- <div class="modelCard" v-if="cardShow">
+    <div class="modelCard" v-if="cardShow">
       <div class="mask" @click="hideCard()"></div>
       <img src="../../assets/images/index-online.png" alt="超级活动" @click="showCardFunc(true)">
-      <span class="close" @click="hideCard()">X</span>
-    </div> -->
-    <!-- <div class="message" v-if="showCard">
-      <div class="mask" @click="showCardFunc(false)"></div>
-      <div class="form">
-        <input id="name" placeholder="输入您的名字" auto-focus v-model="name"/>
-        <input id="phone"  maxlength="11" placeholder="输入您的手机号码"  v-model="phone"/>
-        <button type="primary" size="mini" @click="postMsg()">提交信息</button>
-      </div>
-    </div> -->
+    </div>
     <tab-bars :tabSelectIndex="0"></tab-bars>
   </div>
 </template>
@@ -123,16 +111,11 @@ import tabBars from '../../components/footer'
 export default {
   data () {
     return {
-      showCard: false,
       allShow: false,
       // 推荐人userid
       scene: null,
-      // 用户等级
-      rankId: 1,
-      // 等级名称
-      rankName: '',
       imgData: Object,
-      cardShow: false,
+      cardShow: true,
       motto: 'Hello World',
       userInfo: {},
       signin: '签到',
@@ -169,14 +152,86 @@ export default {
   components: {
     tabBars
   },
-  methods: {}
+  methods: {
+    showCardFunc (bol) {
+      this.showCard = bol
+      // let url = '../outline/main'
+      // let that = this
+      // wx.navigateTo({
+      //   url: url,
+      //   success: function () {
+      //     that.hideCard()
+      //   }
+      // })
+    },
+    hideCard () {
+      this.cardShow = false
+    },
+    signinFunc () {
+      this.signin = '已签到'
+      let data = {
+        userid: this.$getStorage('userid'),
+        account_token: this.$getStorage('account_token')
+      }
+      this.$post('user/qiandao', data).then(res => {
+        console.log(res.data)
+        if (res.data.code === 0) {
+          Message({//eslint-disable-line
+            message: `${res.data.msg}`,
+            type: 'error'
+          })
+        } else {
+          Message({//eslint-disable-line
+            message: `签到成功！获得 ${res.data.data.qiandao_integral} 积分`,
+            type: 'success'
+          })
+        }
+      })
+    }
+  },
+  created () {
+    this.userInfo = {
+      userid: this.$getStorage('userid'),
+      headavatar: this.$getStorage('headavatar'),
+      nickname: this.$getStorage('nickname'),
+      openid: this.$getStorage('openid'),
+      rank_id: this.$getStorage('rank_id'),
+      referee_id: this.$getStorage('referee_id')
+    }
+    console.log(this.userInfo)
+    this.$get('index/index').then(res => {
+      console.log(res)
+      let data = res.data
+      for (let item of data.banner_list) {
+        if (item.type === 1) {
+          let obj = {
+            src: item.src,
+            href: item.link
+          }
+          this.imgUrls.push(obj)
+        } else {
+          let obj = {
+            href: item.link,
+            icon: item.src,
+            text: item.title
+          }
+          this.navBars.push(obj)
+        }
+      }
+      this.productList = data.product_list
+      this.channelList = data.cat_list
+      this.newsList = data.information
+    }).then(err => {
+      console.log(err)
+    })
+  }
 }
 </script>
 
 <style lang="scss" scoped>
 $navColors: (#FEE13F, #89F7FE, #FF5858, #FF9A9E,  #74EBD5);
 .getInfo{
-  width: 750rpx;
+  width: 100vw;
   height: 100vh;
   background-color: rgba(0,0,0,.2);
   display: flex;
@@ -186,10 +241,10 @@ $navColors: (#FEE13F, #89F7FE, #FF5858, #FF9A9E,  #74EBD5);
   top: 0;
   left: 0;
   .getInfo-card{
-    width:500rpx;
+    width:66.667vw;
     height:35vh;
     background-color:#ffffff;
-    border-radius:8rpx;
+    border-radius:4px;
     display:flex;
     flex-direction:column;
     justify-content:space-between;
@@ -199,24 +254,24 @@ $navColors: (#FEE13F, #89F7FE, #FF5858, #FF9A9E,  #74EBD5);
       color: #000000;
       font-size: 16px;
       text-align: center;
-      padding: 20rpx 0;
+      padding: 2.667vw 0;
       border-bottom: 1px solid #eee;
     }
     img{
-      width: 80rpx;
-      height: 80rpx;
+      width: 10.667vw;
+      height: 10.667vw;
       border-radius: 50%;
     }
     .content{
       width: 100%;
       font-size:14px;
       // text-align: center;
-      padding: 0 20rpx;
+      padding: 0 2.667vw;
       color: #595959;
       box-sizing: border-box;
     }
     .comfi{
-      // margin-top: 20rpx;
+      // margin-top: 2.667vw;
       width: 100%;
       text-align: center;
       border-top: 1px solid #eee;
@@ -225,7 +280,7 @@ $navColors: (#FEE13F, #89F7FE, #FF5858, #FF9A9E,  #74EBD5);
         color: #000000;
         flex: 1;
         font-size:14px;
-        padding: 18rpx 0;
+        padding: 2.4vw 0;
       }
       a+a{
         border-left: 1px solid #eee;
@@ -235,7 +290,7 @@ $navColors: (#FEE13F, #89F7FE, #FF5858, #FF9A9E,  #74EBD5);
   }
 }
 .modelCard{
-  width: 750rpx;
+  width: 100vw;
   height: 100vh;
   display: flex;
   justify-content: center;
@@ -247,19 +302,19 @@ $navColors: (#FEE13F, #89F7FE, #FF5858, #FF9A9E,  #74EBD5);
   right: 0;
   z-index: 8;
   .close{
-    width: 50rpx;
-    height: 50rpx;
-    line-height: 50rpx;
+    width: 6.667vw;
+    height: 6.667vw;
+    line-height: 6.667vw;
     color: #ffffff;
     background-color: rgba(0,0,0,.5);
     font-size: 14px;
     border-radius: 50%;
     position: absolute;
-    bottom: 160rpx;
+    bottom: 21.334vw;
     text-align: center;
   }
   .mask{
-    width: 750rpx;
+    width: 100vw;
     height: 100%;
     background-color: rgba(0,0,0,.2);
     position: absolute;
@@ -270,8 +325,8 @@ $navColors: (#FEE13F, #89F7FE, #FF5858, #FF9A9E,  #74EBD5);
     z-index: 1;
   }
   img{
-    width: 530rpx;
-    height: 837rpx;
+    width: 70.667vw;
+    height: 111.6vw;
     border-radius: 6px;
     position: relative;
     z-index: 2;
@@ -282,42 +337,45 @@ $navColors: (#FEE13F, #89F7FE, #FF5858, #FF9A9E,  #74EBD5);
   position: relative;
 }
 .userinfo{
-  width:750rpx;
-  height:138rpx;
+  width:100vw;
+  height:18.4vw;
   display:flex;
   align-items:center;
   box-shadow:0px 0px 8px 0px rgba(0,0,0,0.12);
-  padding:5rpx 42rpx 10rpx 31rpx;
+  padding:0.667vw 5.6028vw 1.334vw 4.1354vw;
   box-sizing: border-box;
-  margin-bottom: 30rpx;
+  margin-bottom: 4vw;
   position: relative;
   .userinfo-avatar{
-    width:98rpx;
-    height:98rpx;
+    width:13.0732vw;
+    height:13.0732vw;
     overflow:hidden;
     display: block;
     border-radius:50%;
-    margin-right:19rpx;
+    margin-right:2.5346vw;
   }
   .userinfo-nickname{
     font-size:14px;
+    .card{
+      text-align: start;
+    }
   }
   .signin{
-    height:50rpx;
-    line-height:50rpx;
+    height:6.667vw;
+    line-height:6.667vw;
     font-size:14px;
     color: #ffffff;
     background-color:#FFD100;
     border-radius: 5px;
-    padding:5rpx 15rpx;
+    padding:0.667vw 2vw;
     display:block;
     position:absolute;
-    right:42rpx;
+    right:5.6028vw;
   }
 }
 .carousel{
-  width:690rpx;
-  height:296rpx;
+  width:92.046vw;
+  height:39.4864vw;
   background:rgba(211,205,180,1);
   margin: 0 auto;
   border-radius:8px;
@@ -328,9 +386,9 @@ $navColors: (#FEE13F, #89F7FE, #FF5858, #FF9A9E,  #74EBD5);
   }
 }
 .navbar{
-  width: 750rpx;
-  height: 208rpx;
-  padding: 32rpx 42rpx;
+  width: 100vw;
+  // height: 27.7472vw;
+  padding: 4.2688vw 5.6028vw;
   box-sizing: border-box;
   display: flex;
   justify-content: space-between;
@@ -340,18 +398,18 @@ $navColors: (#FEE13F, #89F7FE, #FF5858, #FF9A9E,  #74EBD5);
     align-items:center;
     justify-content:space-between;
     .navbar-icon{
-      width: 88rpx;
-      height: 88rpx;
+      width: 11.7392vw;
+      height: 11.7392vw;
+      margin-bottom: 2vw;
       border-radius: 5px;
       img{
         width: 80%;
         height: 80%;
         margin-top:10%;
-        margin-left:10%;
       }
     }
     .navbar-text{
-      font-size: 24rpx;
+      font-size: 12px;
       color: #262626;
     }
   }
@@ -365,22 +423,22 @@ $navColors: (#FEE13F, #89F7FE, #FF5858, #FF9A9E,  #74EBD5);
   }
 }
 .divide{
-  width: 750rpx;
-  height: 18rpx;
+  width: 100vw;
+  height: 2.4vw;
   background-color: #fafafa;
-  margin-bottom: 32rpx;
+  margin-bottom: 4.2688vw;
 }
 .channel{
-  width: 750rpx;
+  width: 100vw;
   height: auto;
-  padding: 0 30rpx;
+  padding: 0 4vw;
   box-sizing: border-box;
   .channel-title{
     width: 100%;
-    // height: 28rpx;
+    // height: 3.7352vw;
     font-size: 16px;
-    padding-left: 30rpx;
-    margin-bottom: 32rpx;
+    padding-left: 4vw;
+    margin-bottom: 4.2688vw;
     position: relative;
     display:flex;
     justify-content:space-between;
@@ -388,14 +446,14 @@ $navColors: (#FEE13F, #89F7FE, #FF5858, #FF9A9E,  #74EBD5);
     box-sizing: border-box;
     .line{
       height: 100%;
-      width: 6rpx;
+      width: 0.8vw;
       background-color: #FFD100;
       position: absolute;
       top: 0;
-      left: 4rpx;
+      left: 0.5332vw;
     }
     .get-all{
-      font-size:24rpx;
+      font-size: 12px;
       color:#999;
     }
   }
@@ -404,33 +462,34 @@ $navColors: (#FEE13F, #89F7FE, #FF5858, #FF9A9E,  #74EBD5);
     display: flex;
     flex-wrap: wrap;
     .list-item:nth-child(2n+2){
-      margin-left: 30rpx;
+      margin-left: 4vw;
     }
     .list-item{
-      width: 330rpx;
+      width: 44vw;
       .item-cover{
-        width: 330rpx;
-        height: 185rpx;
+        width: 44vw;
+        height: 24.6605vw;
         border-radius: 4px;
       }
       p{
         width: 100%;
+        text-align: start;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        padding: 0 4rpx;
+        padding: 0 0.5332vw;
         box-sizing: border-box;
       }
       .title1{
-        height:36rpx;
-        font-size: 28rpx;
+        height:4.8024vw;
+        font-size: 3.7352vw;
         color: #262626;
       }
       .title2{
-        height:28rpx;
-        font-size: 22rpx;
+        height:3.7352vw;
+        font-size: 11px;
         color: #888;
-        margin: 4rpx 0 40rpx;
+        margin: 0.5332vw 0 5.336vw;
       }
     }
     // .cover{
@@ -440,48 +499,50 @@ $navColors: (#FEE13F, #89F7FE, #FF5858, #FF9A9E,  #74EBD5);
     // }
   }
 }
-.channel + .channel{margin-top: 60rpx;}
+.channel + .channel{margin-top: 8vw;}
 .news{
-  width: 750rpx;
-  margin-top: 60rpx;
-  padding: 0 20rpx;
+  width: 100vw;
+  margin-top: 8vw;
+  padding: 0 2.667vw;
   box-sizing: border-box;
   .news-title{
     width: 100%;
-    // height: 28rpx;
-    padding:0 20rpx;
-    margin-bottom: 32rpx;
+    // height: 3.7352vw;
+    padding:0 2.667vw;
+    margin-bottom: 4.2688vw;
     position: relative;
     display:flex;
     justify-content:space-between;
     align-items: center;
     box-sizing: border-box;
     .new{
-      font-size: 32rpx;
+      font-size: 4.2688vw;
       color: #262626;
     }
     .change-other{
       color:#595959;
-      font-size:28rpx;
+      font-size:3.7352vw;
     }
   }
   .news-list{
-    margin-bottom: 32rpx;
+    margin-bottom: 4.2688vw;
     .news-list-cell{
-      padding: 8rpx 0;
-      margin-left: 20rpx;
+      padding: 1.0672vw 0;
+      margin-left: 2.667vw;
+      list-style: none;
+      text-align: start;
       .news-list-cell-navigate{
         color:#595959;
-        font-size:24rpx;
+        font-size:12px;
         max-width: 100%;
         overflow: hidden;
         text-overflow:ellipsis;
         white-space: nowrap;
         .circle{
           display: inline-block;
-          width:12rpx;
-          height:12rpx;
-          margin-right: 12rpx;
+          width:1.6vw;
+          height:1.6vw;
+          margin-right: 1.6vw;
           background:rgba(89,89,89,1);
           border-radius:50%;
         }
@@ -490,13 +551,13 @@ $navColors: (#FEE13F, #89F7FE, #FF5858, #FF9A9E,  #74EBD5);
   }
 }
 .column{
-  margin: 30rpx 0;
+  margin: 4vw 0;
   .column-title{
     width:100%;
     color: #262626;
-    font-size: 32rpx;
-    padding-left: 30rpx;
-    margin-bottom: 32rpx;
+    font-size: 4.2688vw;
+    padding-left: 4vw;
+    margin-bottom: 4.2688vw;
     position: relative;
     display: flex;
     justify-content: space-between;
@@ -504,11 +565,11 @@ $navColors: (#FEE13F, #89F7FE, #FF5858, #FF9A9E,  #74EBD5);
     box-sizing: border-box;
     .line{
       height: 100%;
-      width: 6rpx;
+      width: 0.08vw;
       background-color: #FFD100;
       position: absolute;
       top: 0;
-      left: 4rpx;
+      left: 0.5332vw;
     }
     .get-all{
       font-size: 12px;
@@ -516,46 +577,46 @@ $navColors: (#FEE13F, #89F7FE, #FF5858, #FF9A9E,  #74EBD5);
     }
   }
   .column-item{
-    width:690rpx;
-    max-height: 278rpx;
-    padding: 20rpx 0;
-    margin: 0 auto 20rpx;
+    width:92.046vw;
+    max-height: 37.0852vw;
+    padding: 2.667vw 0;
+    margin: 0 auto 2.667vw;
     display: flex;
-    box-shadow:0 6rpx 15rpx 2px #eee;
-    border-radius: 8rpx;
+    box-shadow:0 0.08vw 2vw 2px #eee;
+    border-radius: 1.0672vw;
     box-sizing: border-box;
     overflow: hidden;
     .left-view{
-      padding: 9rpx;
+      padding: 1.2vw;
       box-sizing: border-box;
       position: relative;
       .column-img{
-        width: 200rpx;
-        height:200rpx;
+        width: 26.68vw;
+        height:26.68vw;
       }
       .play-column{
         display: block;
         position: absolute;
         top:50%;
         left:50%;
-        margin: -27rpx 0 0 -27rpx;
+        margin: -3.6018vw 0 0 -3.6018vw;
         img{
-          width: 54rpx;
-          height:54rpx;
+          width: 7.2036vw;
+          height:7.2036vw;
         }
       }
     }
     .right-view{
-      width: 550rpx;
+      width: 56.667vw;
       position: relative;
       display: flex;
       flex-direction: column;
-      padding: 8rpx 18rpx;
+      padding: 1.0672vw 2.4vw;
       .item-title{
-        max-height: 77rpx;
+        max-height: 10.2718vw;
         color:#262626;
         font-size: 14px;
-        margin-bottom: 12rpx;
+        margin-bottom: 1.6vw;
         overflow: hidden;
         display: -webkit-box;
         text-overflow: ellipsis;
@@ -563,7 +624,7 @@ $navColors: (#FEE13F, #89F7FE, #FF5858, #FF9A9E,  #74EBD5);
         -webkit-line-clamp: 2;
       }
       .item-intro{
-        max-height: 65rpx;
+        max-height: 8.671vw;
         font-size: 12px;
         color: #999;
         overflow: hidden;
@@ -573,28 +634,28 @@ $navColors: (#FEE13F, #89F7FE, #FF5858, #FF9A9E,  #74EBD5);
         -webkit-line-clamp: 2;
       }
       .item-intro+.item-intro{
-        margin-top: 10rpx
+        margin-top: 1.334vw
       }
       .play-num{
-        font-size: 24rpx;
+        font-size: 12px;
         color:#999999;
         position: absolute;
-        right: 30rpx;
+        right: 4vw;
         display: flex;
         align-items: center;
         bottom: 0;
-        line-height: 28rpx;
+        line-height: 3.7352vw;
         img{
-          width: 28rpx;
-          height: 28rpx;
-          margin-right: 8rpx;
+          width: 3.7352vw;
+          height: 3.7352vw;
+          margin-right: 1.0672vw;
         }
       }
     }
   }
 }
 .message{
-    width: 750rpx;
+    width: 100vw;
     height: 100vh;
     margin: 0;
     display: flex;
@@ -605,7 +666,7 @@ $navColors: (#FEE13F, #89F7FE, #FF5858, #FF9A9E,  #74EBD5);
     left:0;
     z-index: 9;
     .mask{
-      width: 750rpx;
+      width: 100vw;
       height: 100vh;
       background-color: rgba(0,0,0,.3);
       position: absolute;
@@ -615,16 +676,16 @@ $navColors: (#FEE13F, #89F7FE, #FF5858, #FF9A9E,  #74EBD5);
       background-color: #ffffff;
       border: 1px solid #eee;
       border-radius: 5px;
-      padding: 20rpx;
+      padding: 2.667vw;
       box-sizing: border-box;
-      width:450rpx;
+      width:46.667vw;
       text-align:center;
       z-index: 2;
       input{
-        margin:18rpx 0;
+        margin:2.4vw 0;
         border-radius:3px;
         border:1px solid #eee;
-        padding:10rpx 20rpx;
+        padding:1.334vw 2.667vw;
         font-size:14px;
       }
     }
