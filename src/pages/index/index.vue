@@ -153,6 +153,9 @@ export default {
     tabBars
   },
   methods: {
+    getUrl2 (url) {
+      this.$router.push({'path': url})
+    },
     showCardFunc (bol) {
       this.showCard = bol
       // let url = '../outline/main'
@@ -176,16 +179,22 @@ export default {
       this.$post('user/qiandao', data).then(res => {
         console.log(res.data)
         if (res.data.code === 0) {
-          Message({//eslint-disable-line
+          this.$Message({//eslint-disable-line
             message: `${res.data.msg}`,
             type: 'error'
           })
         } else {
-          Message({//eslint-disable-line
+          this.$Message({//eslint-disable-line
             message: `签到成功！获得 ${res.data.data.qiandao_integral} 积分`,
             type: 'success'
           })
         }
+      })
+    },
+    // 资讯换一换
+    changeNews () {
+      this.$get('index/information').then(res => {
+        this.newsList = res.data
       })
     }
   },
@@ -211,18 +220,31 @@ export default {
           this.imgUrls.push(obj)
         } else {
           let obj = {
-            href: item.link,
+            href: item.link.split('/')[1],
             icon: item.src,
             text: item.title
           }
           this.navBars.push(obj)
         }
       }
+      this.$setStorage('bannerList', JSON.stringify(this.imgUrls))
       this.productList = data.product_list
       this.channelList = data.cat_list
       this.newsList = data.information
     }).then(err => {
       console.log(err)
+    })
+    this.$get('login/get_company').then(res => {
+      console.log(res.data.data)
+      let obj = res.data.data
+      this.$setStorage('local_postage', obj.local_postage)
+      this.$setStorage('appid', obj.mpappid)
+      this.$setStorage('mch_id', obj.mch_id)
+      this.$setStorage('daili_fee', obj.daili_fee)
+      this.$setStorage('member_fee', obj.member_fee)
+      this.$setStorage('mch_id', obj.mch_id)
+      // this.totleFee = 1
+      this.totleFee = res.data.data.local_postage * 100
     })
   }
 }

@@ -4,12 +4,22 @@ import Router from 'vue-router'
 const init = () => import('@/pages/init/init')
 const index = () => import('@/pages/index/index')
 const lita = () => import('@/pages/lita/lita')
+const songshu = () => import('@/pages/songshu/songshu')
+const addition = () => import('@/pages/addition/addition')
+const counter = () => import('@/pages/counter/counter')
+const shop = () => import('@/pages/shop/shop')
+const daili = () => import('@/pages/daili/daili')
+const outline = () => import('@/pages/outline/outline')
 const home = () => import('@/pages/home/home')
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
+    {
+      path: '/',
+      component: init
+    },
     {
       path: '/index',
       name: 'index',
@@ -29,6 +39,36 @@ export default new Router({
       path: '/init',
       name: 'init',
       component: init
+    },
+    {
+      path: '/songshu',
+      name: 'songshu',
+      component: songshu
+    },
+    {
+      path: '/addition',
+      name: 'addition',
+      component: addition
+    },
+    {
+      path: '/counter',
+      name: 'counter',
+      component: counter
+    },
+    {
+      path: '/outline',
+      name: 'outline',
+      component: outline
+    },
+    {
+      path: '/daili',
+      name: 'daili',
+      component: daili
+    },
+    {
+      path: '/shop',
+      name: 'shop',
+      component: shop
     }
   ]
 })
