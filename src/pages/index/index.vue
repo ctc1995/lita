@@ -153,11 +153,44 @@ export default {
     tabBars
   },
   methods: {
+    getUrl (pageType, id) {
+      this.cardShow = false
+      let route = {
+        'path': ''
+      }
+      if (pageType === 'channel') {
+        route.path = 'audiolist/' + id
+        // url = '../audio-list/main?pageId=' + id
+      } else if (pageType === 'news') {
+        route.path = 'newlist/' + id
+        // url = '../new-detail/main?newId=' + id
+      } else {
+        route.path = 'index'
+        // url = '../index/main'
+      }
+      console.log(route)
+      this.$router.push(route)
+    },
     getUrl2 (url) {
       this.$router.push({'path': url})
     },
+    getDetail (pageId, projectId) {
+      let route = {
+        'path': ''
+      }
+      if (pageId == 5) {//eslint-disable-line
+        route.path = '/audiodetail/' + projectId
+      } else if (pageId == 3) {//eslint-disable-line
+        route.path = '/videodetail/' + projectId
+      } else {
+        route.path = '/writtendetail/' + projectId
+      }
+      console.log(route)
+      this.$router.push(route)
+    },
     showCardFunc (bol) {
       this.showCard = bol
+      this.$router.push({'path': 'outline'})
       // let url = '../outline/main'
       // let that = this
       // wx.navigateTo({

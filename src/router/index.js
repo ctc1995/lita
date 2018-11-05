@@ -10,6 +10,8 @@ const counter = () => import('@/pages/counter/counter')
 const shop = () => import('@/pages/shop/shop')
 const daili = () => import('@/pages/daili/daili')
 const outline = () => import('@/pages/outline/outline')
+const audiolist = () => import('@/pages/audiolist/audiolist')
+const videodetail = () => import('@/pages/videodetail/videodetail')
 const home = () => import('@/pages/home/home')
 
 Vue.use(Router)
@@ -69,6 +71,18 @@ export default new Router({
       path: '/shop',
       name: 'shop',
       component: shop
+    },
+    {
+      path: '/audiolist/:pageId',
+      name: 'audiolist',
+      component: audiolist,
+      props: true
+    },
+    {
+      path: '/videodetail/:projectId',
+      name: 'videodetail',
+      component: videodetail,
+      props: true
     }
   ]
 })
