@@ -12,12 +12,16 @@ import {
   Message,
   MessageBox,
   Cascader,
-  Loading
+  Loading,
+  Tabs,
+  TabPane
 } from 'element-ui'
 
 Vue.use(Carousel)
 Vue.use(CarouselItem)
 Vue.use(Cascader)
+Vue.use(Tabs)
+Vue.use(TabPane)
 // Vue.use(MessageBox)
 
 Vue.prototype.$loading = Loading.service
