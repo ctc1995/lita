@@ -18,7 +18,10 @@ const home = () => import('@/pages/home/home')
 const myfund = () => import('@/pages/myfund/myfund')
 const extend = () => import('@/pages/extend/extend')
 const myintegral = () => import('@/pages/myintegral/myintegral')
-
+const coursebuy = () => import('@/pages/coursebuy/coursebuy')
+const collect = () => import('@/pages/collect/collect')
+const addmanage = () => import('@/pages/addmanage/addmanage')
+const suggest = () => import('@/pages/suggest/suggest')
 Vue.use(Router)
 
 export default new Router({
@@ -115,6 +118,26 @@ export default new Router({
       name: 'newdetail',
       component: newdetail,
       props: true
+    },
+    {
+      path: '/coursebuy',
+      name: 'coursebuy',
+      component: coursebuy
+    },
+    {
+      path: '/collect',
+      name: 'collect',
+      component: collect
+    },
+    {
+      path: '/addmanage',
+      name: 'addmanage',
+      component: addmanage
+    },
+    {
+      path: '/suggest',
+      name: 'suggest',
+      component: suggest
     }
   ]
 })
