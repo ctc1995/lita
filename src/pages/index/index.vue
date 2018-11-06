@@ -153,8 +153,44 @@ export default {
     tabBars
   },
   methods: {
+    getUrl (pageType, id) {
+      this.cardShow = false
+      let route = {
+        'path': ''
+      }
+      if (pageType === 'channel') {
+        route.path = 'audiolist/' + id
+        // url = '../audio-list/main?pageId=' + id
+      } else if (pageType === 'news') {
+        route.path = 'newdetail/' + id
+        // url = '../new-detail/main?newId=' + id
+      } else {
+        route.path = 'index'
+        // url = '../index/main'
+      }
+      console.log(route)
+      this.$router.push(route)
+    },
+    getUrl2 (url) {
+      this.$router.push({'path': url})
+    },
+    getDetail (pageId, projectId) {
+      let route = {
+        'path': ''
+      }
+      if (pageId == 5) {//eslint-disable-line
+        route.path = '/audiodetail/' + projectId
+      } else if (pageId == 3) {//eslint-disable-line
+        route.path = '/videodetail/' + projectId
+      } else {
+        route.path = '/writtendetail/' + projectId
+      }
+      console.log(route)
+      this.$router.push(route)
+    },
     showCardFunc (bol) {
       this.showCard = bol
+      this.$router.push({'path': 'outline'})
       // let url = '../outline/main'
       // let that = this
       // wx.navigateTo({
@@ -176,16 +212,22 @@ export default {
       this.$post('user/qiandao', data).then(res => {
         console.log(res.data)
         if (res.data.code === 0) {
-          Message({//eslint-disable-line
+          this.$Message({//eslint-disable-line
             message: `${res.data.msg}`,
             type: 'error'
           })
         } else {
-          Message({//eslint-disable-line
+          this.$Message({//eslint-disable-line
             message: `签到成功！获得 ${res.data.data.qiandao_integral} 积分`,
             type: 'success'
           })
         }
+      })
+    },
+    // 资讯换一换
+    changeNews () {
+      this.$get('index/information').then(res => {
+        this.newsList = res.data
       })
     }
   },
@@ -211,18 +253,31 @@ export default {
           this.imgUrls.push(obj)
         } else {
           let obj = {
-            href: item.link,
+            href: item.link.split('/')[1],
             icon: item.src,
             text: item.title
           }
           this.navBars.push(obj)
         }
       }
+      this.$setStorage('bannerList', JSON.stringify(this.imgUrls))
       this.productList = data.product_list
       this.channelList = data.cat_list
       this.newsList = data.information
     }).then(err => {
       console.log(err)
+    })
+    this.$get('login/get_company').then(res => {
+      console.log(res.data.data)
+      let obj = res.data.data
+      this.$setStorage('local_postage', obj.local_postage)
+      this.$setStorage('appid', obj.mpappid)
+      this.$setStorage('mch_id', obj.mch_id)
+      this.$setStorage('daili_fee', obj.daili_fee)
+      this.$setStorage('member_fee', obj.member_fee)
+      this.$setStorage('mch_id', obj.mch_id)
+      // this.totleFee = 1
+      this.totleFee = res.data.data.local_postage * 100
     })
   }
 }
@@ -400,6 +455,7 @@ $navColors: (#FEE13F, #89F7FE, #FF5858, #FF9A9E,  #74EBD5);
     .navbar-icon{
       width: 11.7392vw;
       height: 11.7392vw;
+      text-align: center;
       margin-bottom: 2vw;
       border-radius: 5px;
       img{

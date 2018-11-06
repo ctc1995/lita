@@ -10,13 +10,15 @@
     "unit": "jest --config test/unit/jest.conf.js --coverage",
     "e2e": "node test/e2e/runner.js",
     "test": "npm run unit && npm run e2e",
-    "lint": "eslint --ext .js,.vue src test/unit test/e2e/specs",
+    "lint": "eslint --ext .js,.vue src test/unit test/e2e/specs ",
+    "lint-fix": "eslint --fix --ext .js,.vue src",
     "build": "node build/build.js"
   },
   "dependencies": {
     "element-ui": "^2.4.9",
     "vue": "^2.5.2",
-    "vue-router": "^3.0.1"
+    "vue-router": "^3.0.1",
+    "vue-video-player": "^5.0.2"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",
@@ -73,6 +75,7 @@
     "style-loader": "^0.23.1",
     "uglifyjs-webpack-plugin": "^1.1.1",
     "url-loader": "^0.5.8",
+    "v-distpicker": "^1.0.20",
     "vue-jest": "^1.0.2",
     "vue-loader": "^13.3.0",
     "vue-style-loader": "^3.0.1",

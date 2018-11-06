@@ -76,7 +76,7 @@ export default {
         this.codeImg = res.data
         console.log(this.$util.getStorage('userId'))
         console.log(res.data)
-        this.codeImg = wx.arrayBufferToBase64(res.data)
+        // this.codeImg = wx.arrayBufferToBase64(res.data)
         console.log(this.codeImg)
         this.http.post('undefined', 'http://192.168.1.109/api/index/change_picture', {imgs: res.data}).then(res => {
           console.log('后端：')

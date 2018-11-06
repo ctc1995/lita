@@ -14,6 +14,10 @@ export default {
 
 <style>
 @import url('./assets/styles/weui.min.css');
+* {
+  text-align: start;
+  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+}
 html{
   font-size: 12px;
 }

@@ -9,15 +9,20 @@ import { setStorage, getStorage } from './services/util'
 import {
   Carousel,
   CarouselItem,
-  Message
+  Message,
+  MessageBox,
+  Cascader
 } from 'element-ui'
 
 Vue.use(Carousel)
 Vue.use(CarouselItem)
-// Vue.use(Message)
+Vue.use(Cascader)
+// Vue.use(MessageBox)
 
 Vue.config.productionTip = false
 Vue.prototype.$Message = Message
+Vue.prototype.$MessageBox = MessageBox
+// Vue.prototype.$Cascader = Cascader
 Vue.prototype.$axios = axios
 Vue.prototype.$get = get
 Vue.prototype.$post = post
