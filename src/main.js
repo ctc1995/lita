@@ -11,7 +11,8 @@ import {
   CarouselItem,
   Message,
   MessageBox,
-  Cascader
+  Cascader,
+  Loading
 } from 'element-ui'
 
 Vue.use(Carousel)
@@ -19,6 +20,7 @@ Vue.use(CarouselItem)
 Vue.use(Cascader)
 // Vue.use(MessageBox)
 
+Vue.prototype.$loading = Loading.service
 Vue.config.productionTip = false
 Vue.prototype.$Message = Message
 Vue.prototype.$MessageBox = MessageBox

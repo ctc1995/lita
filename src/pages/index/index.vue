@@ -154,48 +154,6 @@ export default {
     tabBars
   },
   methods: {
-    // 注册
-    reg () {
-      this.userInfo['openid'] = this.$getStorage('openid')
-      this.userInfo['headavatar'] = this.$getStorage('headavatar')
-      this.userInfo['nickname'] = this.$getStorage('nickname')
-      // 用户注册
-      this.$post('Login/reg', this.userInfo).then((res) => {
-        console.log(res)
-        if (res.status === 200) {
-          // this.$router.replace({ path: 'index' })
-          // 获取用户的系统token
-          this.$post('Login/account_token', { openid: this.userInfo.openid }).then(res => {
-            if (res.data.code === 1) {
-              this.$setStorage('account_token', res.data.data['account_token'])
-              // 获取用户信息
-              let getUsrtInfoData = {
-                'openid': this.userInfo.openid,
-                'account_token': res.data.data['account_token']
-              }
-              // 获取用户信息
-              this.$post('user/get_info', getUsrtInfoData).then(res => {
-                console.log(res.data.data)
-                if (res.data.code === 1) {
-                  this.$setStorage('rank_id', res.data.data.rank_id)
-                  this.$setStorage('referee_id', res.data.data.referee_id)
-                  this.$setStorage('userid', res.data.data.userid)
-                  this.userInfo['rank_id'] = this.$getStorage('rank_id')
-                  this.userInfo['referee_id'] = this.$getStorage('referee_id')
-                  this.userInfo['userid'] = this.$getStorage('userid')
-                }
-              }).catch(err => {
-                console.log(err)
-              })
-            }
-          }).catch(err => {
-            console.log(err)
-          })
-        }
-      }).catch((err) => {
-        console.log(err)
-      })
-    },
     getUrl (pageType, id) {
       this.cardShow = false
       let route = {
@@ -275,7 +233,12 @@ export default {
     }
   },
   created () {
-    this.wxCode = window.location.search.replace('?', '').split('&')[0].split('=')[1]
+    this.userInfo['openid'] = this.$getStorage('openid')
+    this.userInfo['headavatar'] = this.$getStorage('headavatar')
+    this.userInfo['nickname'] = this.$getStorage('nickname')
+    this.userInfo['rank_id'] = this.$getStorage('rank_id')
+    this.userInfo['referee_id'] = this.$getStorage('referee_id')
+    this.userInfo['userid'] = this.$getStorage('userid')
     console.log(this.userInfo)
     this.$get('index/index').then(res => {
       console.log(res)
@@ -302,13 +265,6 @@ export default {
       this.newsList = data.information
     }).then(err => {
       console.log(err)
-    })
-    // 通过后台获取用户信息
-    this.$get('login/wxmp_token?code=' + this.wxCode).then(res => {
-      this.$setStorage('openid', res.data['openid'])
-      this.$setStorage('nickname', res.data['nickname'])
-      this.$setStorage('headavatar', res.data['headimgurl'])
-      this.reg()
     })
   }
 }
