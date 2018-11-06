@@ -49,7 +49,7 @@ body{
 .el-tabs--card>.el-tabs__header{
   border: none;
 }
-#pane-first,#pane-second,#pane-three{
+/* #pane-first,#pane-second,#pane-three{
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -59,7 +59,7 @@ body{
     border-radius: 8px;
     box-sizing:border-box;
     color:#262626;
-}
+} */
 .el-tabs__content{
   overflow: unset;
 }

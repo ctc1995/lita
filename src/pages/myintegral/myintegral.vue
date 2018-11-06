@@ -5,128 +5,84 @@
     </div>
     <el-tabs v-model="activeName2" type="card" @tab-click="handleClick" stretch>
       <el-tab-pane label="积分明细" name="first">
-        <div>
-          <p>签到送积分</p>
-          <p>2018/10/27 16:28:58</p>
+        <div v-for="(item, index) in integralList" :key="index">
+          <div class="infomation">
+            <div>
+              <p>{{item.beizhu}}</p>
+              <p>{{item.addtime}}</p>
+            </div>
+            <label for="">{{item.num}} 积分</label>
+          </div>
         </div>
-        <label for="">10积分</label>
       </el-tab-pane>
       <el-tab-pane label="积分排行" name="second">
-        <div class="rankings">
+        <div class="rankings" v-for="(item, index) in rankings" :key="index">
           <div class="integral">
-            <img src="../../assets/images/first.png" alt="" width="25">
-            <img src="https://wx.qlogo.cn/mmopen/vi_32/EaTSglxTYZHLdmyn9GRhAN2UrjMwas3xquNFnW4LxxKUh1eTLbYvXnUfdpXMHhLpfCJZ1U7P4ssZ8QjqrVem0A/132" alt="" width="45">
-            <p>北城</p>
+            <img v-if="index==0" src="../../assets/images/first.png" width="25" class="rankImg">
+            <img v-if="index==1" src="../../assets/images/second.png" width="25" class="rankImg">
+            <img v-if="index==2" src="../../assets/images/third.png"  width="25" class="rankImg">
+            <p v-if="index>2" class="rankLv">{{index + 1 < 9 ? '0'+(index+1) : index+1}}</p>
+            <img :src="item.headavatar" alt="" width="45" style="border-radius: 50%;margin: 0 10px;">
+            <p>{{item.nickname}}</p>
           </div>
-        <label for="">100积分</label>
+          <label for="">{{item.integral}} 积分</label>
         </div>
       </el-tab-pane>
-    </el-tabs>
+  </el-tabs>
   </div>
 </template>
 
 <script>
+import { formatTime } from '../../services/util'
+
 export default {
   data () {
     return {
       activeName2: 'first',
       userInfo: {},
+      rankings: {},
       currentData: 0,
       jifen: 0,
-      integralList: [
-        // {
-        //   inteTitle: '商业分析框架讲解《商业分析 框架讲解》',
-        //   inteNum: '-88',
-        //   inteTime: '2018.10.02 17：25：25'
-        // },
-        // {
-        //   inteTitle: '签到',
-        //   inteNum: '+33',
-        //   inteTime: '2018.10.09'
-        // },
-        // {
-        //   inteTitle: '签到',
-        //   inteNum: '+888',
-        //   inteTime: '2018.10.12'
-        // }
-      ],
+      integralList: [],
       rankList: []
     }
   },
-  onLoad: function () {
-    // this.integralList = []
-    // this.rankList = []
-    // userTopRanking({}).then(response => {
-    //   this.rankList = response.data
-    // })
-    // this.getUserInfo()
+  created: function () {
+    // 调用应用实例的方法获取全局数据
+    this.getUserInfo()
+    this.$get('Index/user_top_ranking').then(res => {
+      this.rankings = res.data.data
+    })
   },
   methods: {
     handleClick (tab, event) {
       // console.log(tab, event)
     },
-    bindViewTap () {
-      //   const url = '../logs/main'
-      //   wx.navigateTo({ url })
-    },
-    bindchange: function (e) {
-      this.currentData = e.detail.current
-    },
-    // 点击切换，滑块index赋值
-    checkCurrent: function (e) {
-      if (this.currentData === e.target.dataset.current) {
-        return false
-      } else {
-        this.currentData = e.target.dataset.current
-      }
-    },
     getUserInfo () {
       let data = {
-        userid: this.$getStorage('userId'),
+        userid: this.$getStorage('user_id'),
         type: 2,
         account_token: this.$getStorage('account_token')
       }
-      console.log(data)
       this.$post('User/commission_record', data).then(res => {
         this.jifen = 0
-        console.log(res.data.data)
         for (let item of res.data.data) {
           this.jifen += item.num - 0
-          // console.log(item)
-          // let addtime = item.addtime + '000' - 0
+          let addtime = item.addtime + '000' - 0
           let obj = {
             beizhu: item.beizhu,
-            // 'addtime': this.$util.formatTime(new Date(addtime)),
+            'addtime': formatTime(new Date(addtime)),
             num: item.num
           }
-          console.log(obj)
           this.integralList.push(obj)
         }
-        console.log(this.integralList)
       })
-    },
-    clickHandle (msg, ev) {
-      console.log('clickHandle:', msg, ev)
     }
-  },
-  created () {
-    // 调用应用实例的方法获取全局数据
-    // this.getUserInfo()
-    let data = {
-      userid: this.$getStorage('userId'),
-      type: 2,
-      account_token: this.$getStorage('account_token')
-    }
-    this.$post('User/commission_record', data).then(res => {
-      console.log(data)
-    })
   }
 }
 </script>
-
 <style lang="scss" scoped>
-.container {
-}
+.container {}
 .inte-num {
   font-size: 1.5rem;
   width: 100%;
@@ -204,6 +160,7 @@ swiper-item {
       }
       .rankLv {
         width: 6.67vw;
+        height: 7.06vw;
         text-align: center;
       }
       .rankImg {
@@ -241,11 +198,23 @@ swiper-item {
   justify-content: start;
   align-items: center;
 }
-.integral img:nth-of-type(2){
-  border-radius: 50%;
-  margin: 0 10px;
-}
 .integral p{
   font-size: 14px;
+}
+.integral .rankLv{
+  width: 25px;
+  text-align: center;
+}
+.infomation,.rankings{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow:0 0 16px rgba(0, 0, 0, 0.08);
+  padding: 3.5vw 3.73vw;
+  border-radius: 8px;
+  box-sizing:border-box;
+  color:#262626;
+  margin-bottom: 10px;
 }
 </style>

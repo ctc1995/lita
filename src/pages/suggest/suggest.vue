@@ -62,24 +62,20 @@ export default {
   methods: {
     addClass: function (index, value) {
       this.current = index
-      this.level = value
+      this.level = value.title
     },
     submitMsg: function () {
       let data = {
-        userid: this.$getStorage('userId'),
+        userid: this.$getStorage('user_id'),
         content: `客户评价：${this.level}, 客户留言:${this.msg}`,
         account_token: this.$getStorage('account_token')
       }
+      console.log(data)
       this.$post('user/feedback', data).then(res => {
-        // wx.showToast({
-        //   title: '谢谢留言！',
-        //   duration: 2000
-        // })
-        // setTimeout(() => {
-        //   wx.navigateBack({
-        //     delta: 1
-        //   })
-        // }, 2000)
+        this.$Message({//eslint-disable-line
+            message: `谢谢留言!`,
+            type: 'success'
+          })
       })
     }
   }

@@ -27,7 +27,7 @@
           <img :src="'data:image/png;base64,'+codeImg" alt="小程序码">
           <p>「长按二维码打开小程序」</p>
           <div class="avatar">
-            <open-data type="userAvatarUrl"></open-data>
+            <!-- <open-data type="userAvatarUrl"></open-data> -->
           </div>
         </div>
         <span class="close" @click="hideCard()">X</span>
@@ -36,54 +36,38 @@
 </template>
 
 <script>
+import { formatTime } from '../../services/util'
+
 export default {
   data () {
     return {
       root: this.root,
       codeImg: ``,
       cardShow: false,
-      extendList: [
-        // {
-        //   exAccount: 'JINXIU0947',
-        //   account: '158****9445',
-        //   regTime: '2018/10/02 17:42:35',
-        //   accountImg: require('../../images/headx.png')
-        // }
-      ]
+      extendList: []
     }
   },
-  onLoad: function () {
+  created: function () {
     let starData = {
-      userid: this.$getStorage('userId'),
+      userid: this.$getStorage('user_id'),
       account_token: this.$getStorage('account_token')
     }
-    this.$post(undefined, 'user/my_extension', starData).then(res => {
+    this.$post('user/my_extension', starData).then(res => {
       // console.log(res.data.data)
       this.extendList = []
       for (let item of res.data.data) {
         let obj = {
           exAccount: item.nickname,
           account: item.username,
-          accountImg: item.headavatar
-          //   regTime: formatTime(new Date(item.addtime + '000' - 0)),
+          accountImg: item.headavatar,
+          regTime: formatTime(new Date(item.addtime + '000' - 0))
         }
         this.extendList.push(obj)
       }
     })
-    this.$get(`Login/getwxacodeunlimit?scene=${this.$getStorage('userId')}&width=430&wxToken=${this.$getStorage('wxToken')}`)
+    this.$get(`Login/getwxacodeunlimit?scene=${this.$getStorage('user_id')}&width=430&wxToken=${this.$getStorage('wxToken')}`)
       .then(res => {
-        console.log('WXACode')
         this.codeImg = res.data
-        console.log(this.$util.getStorage('userId'))
-        console.log(res.data)
-        // this.codeImg = wx.arrayBufferToBase64(res.data)
-        console.log(this.codeImg)
-        this.http.post('undefined', 'http://192.168.1.109/api/index/change_picture', {imgs: res.data}).then(res => {
-          console.log('后端：')
-          this.codeImg = this.root + res
-          console.log(res)
-        })
-        console.log(this.imgData)
       })
   },
 
@@ -168,6 +152,7 @@ export default {
     position: absolute;
     bottom: 21.3vw;
     text-align: center;
+    z-index: 2;
   }
   .mask {
     width: 100vw;

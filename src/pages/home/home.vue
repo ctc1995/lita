@@ -79,56 +79,56 @@ export default {
           icon: require('../../assets/images/fund.png'),
           text: '奖学金',
           class: 'list-icon-1',
-          url: '../myfund/main'
+          url: 'myfund'
         },
         {
           icon: require('../../assets/images/extend.png'),
           text: '我的推广',
           class: 'list-icon-2',
-          url: '../extend/main'
+          url: 'extend'
         },
         {
           icon: require('../../assets/images/integral.png'),
           text: '我的积分',
           class: 'list-icon-3',
-          url: '../myintegral/main'
+          url: 'myintegral'
         },
         {
           icon: require('../../assets/images/course.png'),
           text: '已购课程',
           class: 'list-icon-4',
-          url: '../coursebuy/main'
+          url: 'coursebuy'
         },
         {
           icon: require('../../assets/images/course.png'),
           text: '已购专栏',
           class: 'list-icon-4',
-          url: '../home/main'
+          url: 'home'
         },
         {
           icon: require('../../assets/images/bind.png'),
           text: '我的收藏',
           class: 'list-icon-5',
-          url: '../collect/main'
+          url: 'collect'
         },
         {
           icon: require('../../assets/images/address.png'),
           text: '地址管理',
           class: 'list-icon-6',
-          url: '../addmanage/main'
+          url: 'addmanage'
         },
         {
           icon: require('../../assets/images/order.png'),
           text: '意见反馈',
           class: 'list-icon-7',
-          url: '../suggest/main'
+          url: 'suggest'
         }
       ]
     }
   },
   created () {
     this.userInfo = {
-      userid: this.$getStorage('userid'),
+      userid: this.$getStorage('user_id'),
       headavatar: this.$getStorage('headavatar'),
       nickname: this.$getStorage('nickname'),
       openid: this.$getStorage('openid'),
@@ -170,7 +170,7 @@ export default {
       // console.log(e.detail.encryptedData)
     },
     bindPage (url) {
-      // wx.navigateTo({url})
+      this.$router.push({'path': url})
     },
     bindPhone (bol) {
       this.toggleBindPhone = bol
@@ -200,24 +200,24 @@ export default {
           if (resObj.code === 1) {
             this.serverCode = resObj.data
           } else {
-            // wx.showToast({
-            //   title: '短信发送失败，联系管理员!' + resObj.msg,
-            //   icon: 'none'
-            // })
+            this.$Message({//eslint-disable-line
+              message: '短信发送失败，联系管理员!' + resObj.msg,
+              type: 'error'
+            })
           }
         })
       } else {
-        // wx.showToast({
-        //   title: '请勿重复发送验证码!',
-        //   icon: 'none'
-        // })
+        this.$Message({//eslint-disable-line
+          message: '请勿重复发送验证码!',
+          type: 'error'
+        })
       }
     },
     submitBindPhone () {
       if (this.serverCode == this.code) {//eslint-disable-line
         //eslint-disable-line
         let data = {
-          userid: this.$getStorage('userId'),
+          userid: this.$getStorage('user_id'),
           tel: this.phone
         }
         console.log(data)
@@ -225,22 +225,23 @@ export default {
           .then(res => {
             console.log(res)
             if (res.data.code === 1) {
-              // wx.showToast({
-              //   title: '绑定手机成功'
-              // })
+              this.$Message({//eslint-disable-line
+                message: '绑定手机成功!',
+                type: 'success'
+              })
               this.toggleBindPhone = false
             } else {
-              // wx.showToast({
-              //   title: '绑定手机失败' + res.data.msg,
-              //   icon: 'none'
-              // })
+              this.$Message({//eslint-disable-line
+                message: '绑定手机失败' + res.data.msg,
+                type: 'error'
+              })
             }
           })
       } else {
-        // wx.showToast({
-        //   title: '验证码错误！',
-        //   icon: 'none'
-        // })
+        this.$Message({//eslint-disable-line
+          message: '验证码错误！',
+          type: 'error'
+        })
       }
     }
   }
