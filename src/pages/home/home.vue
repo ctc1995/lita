@@ -16,7 +16,7 @@
       <div class="userinfo-nickname">
         <!-- <card :text="nickName" :font-size="18"></card> -->
         <!-- <open-data type="userNickName"></open-data> -->
-        <p class="card" style="font-size:26px;color:#000;">
+        <p class="card" style="font-size:26px;color:#000;text-align: center;">
           {{userInfo.nickname}}
         </p>
         <p class="card" style="color: #FFD100; font-size:14px">
@@ -367,6 +367,7 @@ export default {
   border-radius: 1.3vw;
   border: 0;
   outline: 0;
+  text-align: center;
 }
 .bind-phone:after {
   border: 0;
@@ -385,7 +386,6 @@ export default {
 .userinfo-avatar {
   width: 22.3944vw;
   height: 22.3944vw;
-  /* margin: 20rpx */
   border-radius: 50%;
   overflow: hidden;
   display: block;

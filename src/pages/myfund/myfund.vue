@@ -7,12 +7,12 @@
         <button class="putout" @click="tixianFunc()">提现</button>
         <div class="have-putted">
             <div>
-                <p>已提现奖金</p>
-                <p class="num">￥{{tixian}}</p>
+                <p style="text-align: center;">已提现奖金</p>
+                <p class="num" style="text-align: center;">￥{{tixian}}</p>
             </div>
             <div>
-                <p>已获得奖金</p>
-                <p class="num">￥{{bonus}}</p>
+                <p style="text-align: center;">已获得奖金</p>
+                <p class="num" style="text-align: center;">￥{{bonus}}</p>
             </div>
         </div>
         <div class="bubble">
@@ -149,6 +149,7 @@ export default {
     margin: 2.5vw auto 0;
     border: 0;
     border-radius: 5px;
+    text-align: center;
   }
   .have-putted {
     display: flex;

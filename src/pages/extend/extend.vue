@@ -1,8 +1,8 @@
 <template class="home">
   <div class="container">
       <div class="extend-top">
-        <p style="font-size: 3.73vw">推广人数</p>
-        <p style="font-size: 8.8vw;">{{extendList.length}}</p>
+        <p style="font-size: 3.73vw;text-align: center;">推广人数</p>
+        <p style="font-size: 8.8vw;text-align: center;">{{extendList.length}}</p>
         <a class="tuiguang" @click="tuiguang()">生成我的推广链接</a>
       </div>
       <div class='swiper_con'>
@@ -221,7 +221,7 @@ export default {
   height: 30vw;
   padding-top: 4.3vw;
   color: #ffffff;
-  text-align: center;
+  text-align: center !important;
   width: 100%;
   background: rgba(255, 209, 0, 1);
   .tuiguang {

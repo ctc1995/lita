@@ -32,4 +32,35 @@ body{
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
 }
+.el-tabs{
+  padding: 0 20px;
+}
+.el-tabs--card>.el-tabs__header{
+  border: none;
+}
+#pane-first,#pane-second,#pane-three{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow:0 0 16px rgba(0, 0, 0, 0.08);
+    padding: 3.5vw 3.73vw;
+    border-radius: 8px;
+    box-sizing:border-box;
+    color:#262626;
+}
+.el-tabs__content{
+  overflow: unset;
+}
+.el-tabs--card>.el-tabs__header .el-tabs__nav{
+   border-radius: unset;
+   border: 0;
+}
+.el-tabs--card>.el-tabs__header .el-tabs__item{
+  border: none;
+}
+.el-tabs__item.is-active{
+  color:#ffd100 !important;
+  border-bottom: 2px solid #ffd100 !important;
+}
 </style>

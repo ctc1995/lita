@@ -3,18 +3,25 @@
     <div class="inte-num">
       可用积分：{{jifen}}
     </div>
-    <div class="inte-item">
-      <div class='topTabSwiper'>
-          <div :class="currentData == 0 ? 'tab tabBorer' : 'tab'" :data-current = "0" @click='checkCurrent' style="margin-left: 5%;">积分明细</div>
-          <div :class="currentData == 1 ? 'tab tabBorer' : 'tab'" :data-current = "1" @click='checkCurrent' style="margin-left: 10%;">积分排行</div>
-      </div>
-    </div>
-     <!-- <div class="audio-list">
-        <div class="audio-item" v-for="(audioItem, index) in audioLists" :key="index">
-          <img class="audio-img" :src="audioItem.img" :alt="audioItem.text">
-          <p class="audio-text">{{audioItem.text}}</p>
+    <el-tabs v-model="activeName2" type="card" @tab-click="handleClick" stretch>
+      <el-tab-pane label="积分明细" name="first">
+        <div>
+          <p>签到送积分</p>
+          <p>2018/10/27 16:28:58</p>
         </div>
-      </div> -->
+        <label for="">10积分</label>
+      </el-tab-pane>
+      <el-tab-pane label="积分排行" name="second">
+        <div class="rankings">
+          <div class="integral">
+            <img src="../../assets/images/first.png" alt="" width="25">
+            <img src="https://wx.qlogo.cn/mmopen/vi_32/EaTSglxTYZHLdmyn9GRhAN2UrjMwas3xquNFnW4LxxKUh1eTLbYvXnUfdpXMHhLpfCJZ1U7P4ssZ8QjqrVem0A/132" alt="" width="45">
+            <p>北城</p>
+          </div>
+        <label for="">100积分</label>
+        </div>
+      </el-tab-pane>
+    </el-tabs>
   </div>
 </template>
 
@@ -22,6 +29,7 @@
 export default {
   data () {
     return {
+      activeName2: 'first',
       userInfo: {},
       currentData: 0,
       jifen: 0,
@@ -54,6 +62,9 @@ export default {
     // this.getUserInfo()
   },
   methods: {
+    handleClick (tab, event) {
+      // console.log(tab, event)
+    },
     bindViewTap () {
       //   const url = '../logs/main'
       //   wx.navigateTo({ url })
@@ -98,10 +109,17 @@ export default {
       console.log('clickHandle:', msg, ev)
     }
   },
-
   created () {
     // 调用应用实例的方法获取全局数据
     // this.getUserInfo()
+    let data = {
+      userid: this.$getStorage('userId'),
+      type: 2,
+      account_token: this.$getStorage('account_token')
+    }
+    this.$post('User/commission_record', data).then(res => {
+      console.log(data)
+    })
   }
 }
 </script>
@@ -208,5 +226,26 @@ swiper-item {
       align-items: center;
     }
   }
+}
+.rankings{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.integral{
+  width: 80%;
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+}
+.integral img:nth-of-type(2){
+  border-radius: 50%;
+  margin: 0 10px;
+}
+.integral p{
+  font-size: 14px;
 }
 </style>
