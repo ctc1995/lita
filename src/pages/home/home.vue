@@ -1,632 +1,490 @@
 <template>
   <div class="container">
+    <!-- 顶部 -->
+    <div class="top-item">
+        <img src="../../assets/images/header.png" class="header-img"/>
+        <!-- <button class="bind-phone" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber">绑定手机</button> -->
+        <button class="bind-phone" @click="bindPhone(true)">绑定手机</button>
+        <a href="../mymessage/main" class="setting"><img src="../../assets/images/setting.png" /></a>
+    </div>
     <!-- 个人信息 -->
     <div class="userinfo">
-      <!-- <img class="userinfo-avatar" v-if="userInfo.avatarUrl" :src="userInfo.avatarUrl" background-size="cover" /> -->
-      <div class="userinfo-avatar">
-        <!-- <open-data type="userAvatarUrl"></open-data> -->
-      </div>
+      <img :src="userInfo.headavatar" class="userinfo-avatar"/>
+      <!-- <div class="userinfo-avatar">
+        <open-data type="userAvatarUrl"></open-data>
+      </div> -->
       <div class="userinfo-nickname">
-        <!-- <card :text="nickName"></card> -->
+        <!-- <card :text="nickName" :font-size="18"></card> -->
         <!-- <open-data type="userNickName"></open-data> -->
-        <!-- <card :text="rankName" :textColor="'#FFD100'" :fontSize="14"></card> -->
-        <p class="card" style="color: #FFD100; font-size:14px">
-          {{rankName}}
+        <p class="card" style="font-size:26px;color:#000;">
+          {{userInfo.nickname}}
         </p>
-      </div>
-      <span class="signin" @click="signinFunc()">{{signin}}</span>
-    </div>
-    <!-- 轮播图 -->
-    <!-- <swiper  class="carousel"
-      :indicator-dots="indicatorDots"
-      :autoplay="autoplay"
-      :interval="interval"
-      :duration="duration"
-      :circular="circular">
-      <block v-for="(imgItem,index) in imgUrls" :key="index">
-        <swiper-item>
-          <image :src="imgItem.src" class="slide-image" width="355" height="150"/>
-        </swiper-item>
-      </block>
-    </swiper> -->
-    <!-- 导航 -->
-    <div class="navbar">
-      <div class="navbar-item" v-for="(navBarItem, index) in navBars" :key="index" @click="getUrl2(navBarItem.href)">
-        <div class="navbar-icon">
-          <img :src="navBarItem.icon" :alt="navBarItem.text">
-        </div>
-        <div class="navbar-text">
-          {{navBarItem.text}}
-        </div>
+        <p class="card" style="color: #FFD100; font-size:14px">
+          {{userInfo.rank_id == 0 ? '客户' : userInfo.rank_id == 1 ? '会员' : '代理人'}}
+        </p>
+        <!-- <card :text="'客户'" :textColor="'#FFD100'" :fontSize="14"></card> -->
       </div>
     </div>
-    <!-- 分割线 -->
-    <div class="divide"></div>
-    <!-- 频道 -->
-    <div class="channel" v-for="(item, index) in channelList" :key="item.id" v-if="!cardShow | index==0">
-      <div class="channel-title">
-        <i class="line"></i>
-        <span class="new">{{item.name}}</span>
-        <span class="get-all" @click="getUrl('channel', item.id)">查看全部</span>
-      </div>
-      <div class="channel-list">
-        <!-- <img :src="item.cover" alt="音频封面" class="cover" @click="getUrl('channel', item.id)"> -->
-        <div class="list-item" v-for="(itemItem, itemindex) in productList[item.id]" :key="itemindex" @click="getDetail(item.id, itemItem.id)">
-          <img class="item-cover" :src="itemItem.cover" :alt="itemItem.name">
-          <p class="title1">{{itemItem.name}}</p>
-          <p class="title2">{{itemItem.name}}</p>
-        </div>
-      </div>
-    </div>
-    <!-- 新闻 -->
-    <div class="news" v-if="!cardShow">
-      <div class="news-title">
-        <span class="new" style="color:#432408">最新<span style="color:#FFD100">资讯</span></span>
-        <span class="change-other" @click="changeNews()">换一换</span>
-      </div>
-      <ul class="news-list">
-        <li class="news-list-cell" v-for="item in newsList" :key="item.newsid" @click="getUrl('news', item.newsid)">
-          <a class="news-list-cell-navigate"><span class="circle"></span>{{item.title}}</a>
+
+    <!-- 列表导航 -->
+    <div>
+      <ul class="fun-list">
+        <li class="fun-list-cell" v-for="(item, index) in funcList" :key="index" @click="bindPage(item.url)">
+
+          <img :class="item.class" class="icon" :src="item.icon" :alt="item.text" />
+
+          <div><span class="list-text">{{item.text}}</span></div>
+
+          <!-- <a class="fun-list-cell-navigate"></a> -->
         </li>
       </ul>
     </div>
-    <!-- 专栏 -->
-    <div class="column" v-if="!cardShow">
-      <div class="column-title">
-        <i class="line"></i>
-        <span class="new">专栏推荐</span>
-        <span class="get-all" @click="getUrl2('../column/main')">查看全部</span>
-      </div>
-      <!-- <scroll-view class="scroll-view_H column-list"
-        scroll-x
-        style="width: 100%">
-        <div class="scroll-view-item_H column-item"
-          :id="index"
-          v-for="(item, index) in colList"
-          :key="index">
-          <div class="left-view">
-            <img :src="item.cover" :alt="item.colTitle" class="column-img">
-          </div>
-          <div class="right-view">
-              <p class="item-title">{{item.colTitle}}</p>
-              <p class="item-intro">{{item.colIntro}}</p>
-              <p class="item-intro">更新{{item.nowCount}}期,共{{item.total}}期</p>
-              <span class="play-num">
-                <span>{{item.colNum}}</span>人订阅
-              </span>
-          </div>
-        </div>
-      </scroll-view> -->
-    </div>
-    <!-- 弹出卡片 -->
-    <!-- <div class="modelCard" v-if="cardShow & allShow"> -->
-    <div class="modelCard" v-if="cardShow">
-      <div class="mask" @click="hideCard()"></div>
-      <img src="../../assets/images/index-online.png" alt="超级活动" @click="showCardFunc(true)">
-      <span class="close" @click="hideCard()">X</span>
-    </div>
-    <!-- <div class="message" v-if="showCard">
-      <div class="mask" @click="showCardFunc(false)"></div>
+    <!-- 绑定手机卡片 -->
+    <div class="bind-phone-card" v-if="toggleBindPhone">
+      <div class="mask" @click="bindPhone(false)"></div>
       <div class="form">
-        <input id="name" placeholder="输入您的名字" auto-focus v-model="name"/>
-        <input id="phone"  maxlength="11" placeholder="输入您的手机号码"  v-model="phone"/>
-        <button type="primary" size="mini" @click="postMsg()">提交信息</button>
+        <p>绑定手机</p>
+        <div class="input-group">
+          <label for="phone">手机号：</label>
+          <input id="phone" type="number" v-model="phone" placeholder="请输入手机号码" maxlength="11">
+        </div>
+        <div class="input-group">
+          <label for="code">验证码：</label>
+          <input id="code" type="text" v-model="code" placeholder="请输入验证码" maxlength="6">
+          <a @click="getCode()">{{getCodeValue}}</a>
+        </div>
+        <a class="submit" @click="submitBindPhone()">提交</a>
       </div>
-    </div> -->
-    <tab-bars :tabSelectIndex="2"></tab-bars>
+    </div>
   </div>
 </template>
 
 <script>
-import tabBars from '../../components/footer'
-
 export default {
   data () {
     return {
-      showCard: false,
-      allShow: false,
-      // 推荐人userid
-      scene: null,
-      // 用户等级
-      rankId: 1,
+      getCodeValue: '获取验证码',
+      getCodeTime: 0,
+      toggleBindPhone: false,
+      nickName: this.$getStorage('nickName'),
+      phone: '',
+      userInfo: {},
+      countdown: {},
+      code: '',
+      serverCode: '',
       // 等级名称
       rankName: '',
-      imgData: Object,
-      cardShow: true,
-      motto: 'Hello World',
-      userInfo: {},
-      signin: '签到',
-      imgUrls: [],
-      navBars: [],
-      newsList: [],
-      channelList: [],
-      productList: [],
-      indicatorDots: true,
-      autoplay: true,
-      circular: true,
-      interval: 3000,
-      duration: 500,
-      colList: [
+      funcList: [
         {
-          cover: '../../assets/images/audio-bg.jpg',
-          colNum: 980,
-          colTitle: '商业分析框架讲解《商业分析 框架讲解》',
-          colIntro: '商业模式速成班，十天成为专家',
-          nowCount: 60,
-          total: 100
+          icon: require('../../assets/images/fund.png'),
+          text: '奖学金',
+          class: 'list-icon-1',
+          url: '../myfund/main'
         },
         {
-          cover: '../../assets/images/audio-bg.jpg',
-          colNum: 980,
-          colTitle: '商业分析框架讲解《商业分析 框架讲解》',
-          colIntro: '逆向招商，现金增长1000倍的新方法',
-          nowCount: 8,
-          total: 8
+          icon: require('../../assets/images/extend.png'),
+          text: '我的推广',
+          class: 'list-icon-2',
+          url: '../extend/main'
+        },
+        {
+          icon: require('../../assets/images/integral.png'),
+          text: '我的积分',
+          class: 'list-icon-3',
+          url: '../myintegral/main'
+        },
+        {
+          icon: require('../../assets/images/course.png'),
+          text: '已购课程',
+          class: 'list-icon-4',
+          url: '../coursebuy/main'
+        },
+        {
+          icon: require('../../assets/images/course.png'),
+          text: '已购专栏',
+          class: 'list-icon-4',
+          url: '../home/main'
+        },
+        {
+          icon: require('../../assets/images/bind.png'),
+          text: '我的收藏',
+          class: 'list-icon-5',
+          url: '../collect/main'
+        },
+        {
+          icon: require('../../assets/images/address.png'),
+          text: '地址管理',
+          class: 'list-icon-6',
+          url: '../addmanage/main'
+        },
+        {
+          icon: require('../../assets/images/order.png'),
+          text: '意见反馈',
+          class: 'list-icon-7',
+          url: '../suggest/main'
         }
       ]
     }
   },
-  components: {
-    tabBars
+  created () {
+    this.userInfo = {
+      userid: this.$getStorage('userid'),
+      headavatar: this.$getStorage('headavatar'),
+      nickname: this.$getStorage('nickname'),
+      openid: this.$getStorage('openid'),
+      rank_id: this.$getStorage('rank_id'),
+      referee_id: this.$getStorage('referee_id')
+    }
+    console.log(this.userInfo)
+    // this.$get('index/index').then(res => {
+    //   console.log(res)
+    //   let data = res.data
+    //   for (let item of data.banner_list) {
+    //     if (item.type === 1) {
+    //       let obj = {
+    //         src: item.src,
+    //         href: item.link
+    //       }
+    //       this.imgUrls.push(obj)
+    //     } else {
+    //       let obj = {
+    //         href: item.link,
+    //         icon: item.src,
+    //         text: item.title
+    //       }
+    //       this.navBars.push(obj)
+    //     }
+    //   }
+    //   this.productList = data.product_list
+    //   this.channelList = data.cat_list
+    //   this.newsList = data.information
+    // }).then(err => {
+    //   console.log(err)
+    // })
   },
-  methods: {}
+  methods: {
+    getPhoneNumber (e) {
+      console.log(e)
+      // console.log(e.detail.errMsg)
+      // console.log(e.detail.iv)
+      // console.log(e.detail.encryptedData)
+    },
+    bindPage (url) {
+      // wx.navigateTo({url})
+    },
+    bindPhone (bol) {
+      this.toggleBindPhone = bol
+    },
+    setInterval () {
+      this.getCodeValue = this.getCodeTime + ' S'
+      this.getCodeTime -= 1
+    },
+    setTimeout () {
+      this.getCodeValue = '重新获取验证码'
+      clearInterval(this.countdown)
+      this.getCodeTime = 0
+      this.countdown = {}
+    },
+    getCode () {
+      if (this.getCodeTime === 0) {
+        this.getCodeTime = 60
+        this.countdown = setInterval(this.setInterval, 1000)
+        setTimeout(this.setTimeout, 60000)
+        let data = {
+          mobile: this.phone,
+          account_token: this.$getStorage('account_token')
+        }
+        this.$post('Common/send_sms', data).then(res => {
+          console.log(res)
+          let resObj = res.data
+          if (resObj.code === 1) {
+            this.serverCode = resObj.data
+          } else {
+            // wx.showToast({
+            //   title: '短信发送失败，联系管理员!' + resObj.msg,
+            //   icon: 'none'
+            // })
+          }
+        })
+      } else {
+        // wx.showToast({
+        //   title: '请勿重复发送验证码!',
+        //   icon: 'none'
+        // })
+      }
+    },
+    submitBindPhone () {
+      if (this.serverCode == this.code) {//eslint-disable-line
+        //eslint-disable-line
+        let data = {
+          userid: this.$getStorage('userId'),
+          tel: this.phone
+        }
+        console.log(data)
+        this.$post('user/perfect_information', data)
+          .then(res => {
+            console.log(res)
+            if (res.data.code === 1) {
+              // wx.showToast({
+              //   title: '绑定手机成功'
+              // })
+              this.toggleBindPhone = false
+            } else {
+              // wx.showToast({
+              //   title: '绑定手机失败' + res.data.msg,
+              //   icon: 'none'
+              // })
+            }
+          })
+      } else {
+        // wx.showToast({
+        //   title: '验证码错误！',
+        //   icon: 'none'
+        // })
+      }
+    }
+  }
 }
 </script>
 
 <style lang="scss" scoped>
-$navColors: (#FEE13F, #89F7FE, #FF5858, #FF9A9E,  #74EBD5);
-.getInfo{
+.bind-phone-card {
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0,0,0,.2);
+  font-size: 14px;
   display: flex;
   justify-content: center;
   align-items: center;
   position: fixed;
   top: 0;
   left: 0;
-  .getInfo-card{
-    width:66.667vw;
-    height:35vh;
-    background-color:#ffffff;
-    border-radius:1.0672vw;
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
-    align-items:center;
-    .title{
-      width: 100%;
-      color: #000000;
-      font-size: 16px;
+  z-index: 9;
+  .mask {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+  }
+  .form {
+    width: 79.98vw;
+    background-color: #ffffff;
+    border-radius: 1.0664vw;
+    border: 1px solid #ddd;
+    padding: 3.7324vw;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 2;
+    p {
+      color: #ffd100;
+      font-size: 20px;
+      font-weight: 600;
       text-align: center;
-      padding: 2.667vw 0;
-      border-bottom: 1px solid #eee;
+      margin-bottom: 7.998vw;
     }
-    img{
-      width: 10.667vw;
-      height: 10.667vw;
-      border-radius: 50%;
+    .input-group + .input-group {
+      border-bottom: 1px solid #ddd;
     }
-    .content{
+    .input-group {
       width: 100%;
-      font-size:14px;
-      // text-align: center;
-      padding: 0 2.667vw;
-      color: #595959;
-      box-sizing: border-box;
-    }
-    .comfi{
-      // margin-top: 2.667vw;
-      width: 100%;
-      text-align: center;
-      border-top: 1px solid #eee;
+      height: 11.997vw;
       display: flex;
-      a{
-        color: #000000;
-        flex: 1;
-        font-size:14px;
-        padding: 2.4vw 0;
+      align-items: center;
+      padding: 0 3.999vw 0 2.3994vw;
+      border-top: 1px solid #ddd;
+      box-sizing: border-box;
+      label {
+        width: 15.996vw;
       }
-      a+a{
-        border-left: 1px solid #eee;
-        color: #1AAD16
+      input {
+        border-radius: 1.0664vw;
+        position: relative;
+        z-index: 1;
+        border: 0;
+        outline: 0;
+        padding: 3px 0;
       }
+      a {
+        min-width: 21.328vw;
+        height: 6.665vw;
+        line-height: 6.665vw;
+        font-size: 14px;
+        color: #fff;
+        background-color: #ffd100;
+        text-align: center;
+        padding: 0 1.1333vw;
+        border-radius: 1.0664vw;
+        position: absolute;
+        right: 5.332vw;
+        z-index: 2;
+      }
+    }
+    .submit {
+      width: 100%;
+      display: inline-block;
+      height: 7.998vw;
+      line-height: 7.998vw;
+      font-size: 4.2656vw;
+      color: #fff;
+      background-color: #ffd100;
+      text-align: center;
+      border-radius: 1.0664vw;
+      margin-top: 7.998vw;
     }
   }
 }
-.modelCard{
+.top-item {
   width: 100vw;
-  height: 100vh;
+  position: relative;
+}
+.header-img {
+  width: 100vw;
+  height: 54.5vw;
+  position: relative;
+  z-index: 0;
+}
+.setting {
+  position: absolute;
+  left: 89vw;
+  top: 3vw;
+}
+.setting img {
+  width: 6.3984vw;
+  height: 6.1318vw;
+}
+.bind-phone {
+  position: absolute;
+  left: 4vw;
+  top: 3.5vw;
+  width: 20.3vw;
+  height: 6.4vw;
+  line-height: 6.4vw;
+  font-size: 3vw;
+  color: #432408;
+  background-color: #ffffff;
+  border-radius: 1.3vw;
+  border: 0;
+  outline: 0;
+}
+.bind-phone:after {
+  border: 0;
+}
+.userinfo {
+  display: flex;
+  margin-top: -30.3924vw;
+  flex-direction: column;
+  align-items: center;
+  z-index: 5;
+  text-align: center;
+}
+.userinfo img{
+  z-index: 2;
+}
+.userinfo-avatar {
+  width: 22.3944vw;
+  height: 22.3944vw;
+  /* margin: 20rpx */
+  border-radius: 50%;
+  overflow: hidden;
+  display: block;
+}
+
+.userinfo-nickname {
+  color: #000;
+}
+
+.usermotto {
+  margin-top: 150px;
+}
+.fun-list {
+  list-style: none;
+  width: 91.977vw;
+  margin: 3.999vw auto 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.fun-list-cell {
+  width: 30.1258vw;
+  height: 22.661vw;
+  padding: 0.3999vw 0;
+  border-bottom: 1px solid #eee;
   display: flex;
   justify-content: center;
   align-items: center;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 8;
-  .close{
-    width: 6.667vw;
-    height: 6.667vw;
-    line-height: 6.667vw;
-    color: #ffffff;
-    background-color: rgba(0,0,0,.5);
-    font-size: 14px;
-    border-radius: 50%;
-    position: absolute;
-    bottom: 21.334vw;
-    text-align: center;
-  }
-  .mask{
-    width: 100vw;
-    height: 100%;
-    background-color: rgba(0,0,0,.2);
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 1;
-  }
-  img{
-    width: 70.667vw;
-    height: 111.6vw;
-    border-radius: 6px;
-    position: relative;
-    z-index: 2;
-  }
+  flex-direction: column;
 }
-.container{
-  overflow: hidden;
-  position: relative;
+.fun-list-cell:nth-child(1),
+.fun-list-cell:nth-child(2),
+.fun-list-cell:nth-child(3) {
+  border-top: 1px solid #eee;
 }
-.userinfo{
-  width:100vw;
-  height:18.4vw;
-  display:flex;
-  align-items:center;
-  box-shadow:0px 0px 8px 0px rgba(0,0,0,0.12);
-  padding:0.667vw 5.6028 1.334vw 4.1354vw;
-  box-sizing: border-box;
-  margin-bottom: 4vw;
-  position: relative;
-  .userinfo-avatar{
-    width:13.0732vw;
-    height:13.0732vw;
-    overflow:hidden;
-    display: block;
-    border-radius:50%;
-    margin-right:2.5346vw;
-  }
-  .userinfo-nickname{
-    font-size:14px;
-  }
-  .signin{
-    height:6.667vw;
-    line-height:6.667vw;
-    font-size:14px;
-    color: #ffffff;
-    background-color:#FFD100;
-    border-radius: 5px;
-    padding:0.667vw 2vw;
-    display:block;
-    position:absolute;
-    right:5.6028;
-  }
+.fun-list-cell:nth-child(3n + 1) {
+  border-left: 1px solid #eee;
+  border-right: 1px solid #eee;
 }
-.carousel{
-  width:92.046vw;
-  height:39.4864vw;
-  background:rgba(211,205,180,1);
-  margin: 0 auto;
-  border-radius:8px;
-  .slide-image{
-    width:100%;
-    height:100%;
-    border-radius: 5px;
-  }
+.fun-list-cell:nth-child(3n + 2) {
+  border-right: 1px solid #eee;
 }
-.navbar{
-  width: 100vw;
-  height: 27.7472vw;
-  padding: 4.2688vw 5.6028;
-  box-sizing: border-box;
-  display: flex;
-  justify-content: space-between;
-  .navbar-item{
-    display: flex;
-    flex-direction: column;
-    align-items:center;
-    justify-content:space-between;
-    .navbar-icon{
-      width: 11.7392vw;
-      height: 11.7392vw;
-      border-radius: 5px;
-      img{
-        width: 80%;
-        height: 80%;
-        margin-top:10%;
-        margin-left:10%;
-      }
-    }
-    .navbar-text{
-      font-size: 12px;
-      color: #262626;
-    }
-  }
-  @for $i from 1 through 5{
-    $item: nth($navColors, $i);
-    .navbar-item:nth-child(#{$i}){
-      .navbar-icon{
-        background-color: $item;
-      }
-    }
-  }
+.fun-list-cell:nth-child(3n + 3) {
+  border-right: 1px solid #eee;
 }
-.divide{
-  width: 100vw;
-  height: 2.4vw;
-  background-color: #fafafa;
-  margin-bottom: 4.2688vw;
+.list-icon-1 {
+  width: 6.8vw;
+  height: 4.7vw;
+  /* vertical-align: middle; */
 }
-.channel{
-  width: 100vw;
-  height: auto;
-  padding: 0 4vw;
-  box-sizing: border-box;
-  .channel-title{
-    width: 100%;
-    // height: 3.7352vw;
-    font-size: 16px;
-    padding-left: 4vw;
-    margin-bottom: 4.2688vw;
-    position: relative;
-    display:flex;
-    justify-content:space-between;
-    align-items: center;
-    box-sizing: border-box;
-    .line{
-      height: 100%;
-      width: 0.08vw;
-      background-color: #FFD100;
-      position: absolute;
-      top: 0;
-      left: 0.5332vw;
-    }
-    .get-all{
-      font-size:12px;
-      color:#999;
-    }
-  }
-  .channel-list{
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    .list-item:nth-child(2n+2){
-      margin-left: 4vw;
-    }
-    .list-item{
-      width: 44.022vw;
-      .item-cover{
-        width: 44.022vw;
-        height: 24.6605vw;
-        border-radius: 4px;
-      }
-      p{
-        width: 100%;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        padding: 0 0.5332vw;
-        box-sizing: border-box;
-      }
-      .title1{
-        height:4.8024vw;
-        font-size: 3.7352vw;
-        color: #262626;
-      }
-      .title2{
-        height:3.7352vw;
-        font-size: 22rpx;
-        color: #888;
-        margin: 0.5332vw 0 5.336vw;
-      }
-    }
-    // .cover{
-    //   width:100%;
-    //   height:298rpx;
-    //   background-color: #FF9A9E;
-    // }
-  }
+.list-icon-2 {
+  width: 6.4vw;
+  height: 6vw;
+  /* vertical-align: middle; */
 }
-.channel + .channel{margin-top: 8vw;}
-.news{
-  width: 100vw;
-  margin-top: 8vw;
-  padding: 0 2.667vw;
-  box-sizing: border-box;
-  .news-title{
-    width: 100%;
-    // height: 3.7352vw;
-    padding:0 2.667vw;
-    margin-bottom: 4.2688vw;
-    position: relative;
-    display:flex;
-    justify-content:space-between;
-    align-items: center;
-    box-sizing: border-box;
-    .new{
-      font-size: 4.2688vw;
-      color: #262626;
-    }
-    .change-other{
-      color:#595959;
-      font-size:3.7352vw;
-    }
-  }
-  .news-list{
-    margin-bottom: 4.2688vw;
-    .news-list-cell{
-      padding: 1.0672vw 0;
-      margin-left: 2.667vw;
-      .news-list-cell-navigate{
-        color:#595959;
-        font-size:12px;
-        max-width: 100%;
-        overflow: hidden;
-        text-overflow:ellipsis;
-        white-space: nowrap;
-        .circle{
-          display: inline-block;
-          width:1.6vw;
-          height:1.6vw;
-          margin-right: 1.6vw;
-          background:rgba(89,89,89,1);
-          border-radius:50%;
-        }
-      }
-    }
-  }
+.list-icon-3 {
+  width: 5.9vw;
+  height: 5.74vw;
+  /* vertical-align: middle; */
 }
-.column{
-  margin: 4vw 0;
-  .column-title{
-    width:100%;
-    color: #262626;
-    font-size: 4.2688vw;
-    padding-left: 4vw;
-    margin-bottom: 4.2688vw;
-    position: relative;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-sizing: border-box;
-    .line{
-      height: 100%;
-      width: 0.08vw;
-      background-color: #FFD100;
-      position: absolute;
-      top: 0;
-      left: 0.5332vw;
-    }
-    .get-all{
-      font-size: 12px;
-      color: #999;
-    }
-  }
-  .column-item{
-    width:92.046vw;
-    max-height: 37.0852vw;
-    padding: 2.667vw 0;
-    margin: 0 auto 2.667vw;
-    display: flex;
-    box-shadow:0 0.08vw 2vw 2px #eee;
-    border-radius: 1.0672vw;
-    box-sizing: border-box;
-    overflow: hidden;
-    .left-view{
-      padding: 1.2vw;
-      box-sizing: border-box;
-      position: relative;
-      .column-img{
-        width: 26.68vw;
-        height:26.68vw;
-      }
-      .play-column{
-        display: block;
-        position: absolute;
-        top:50%;
-        left:50%;
-        margin: -3.6018vw 0 0 -3.6018vw;
-        img{
-          width: 7.2036vw;
-          height:7.2036vw;
-        }
-      }
-    }
-    .right-view{
-      width: 56.667vw;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      padding: 1.0672vw 2.4vw;
-      .item-title{
-        max-height: 10.2718vw;
-        color:#262626;
-        font-size: 14px;
-        margin-bottom: 1.6vw;
-        overflow: hidden;
-        display: -webkit-box;
-        text-overflow: ellipsis;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 2;
-      }
-      .item-intro{
-        max-height: 8.671vw;
-        font-size: 12px;
-        color: #999;
-        overflow: hidden;
-        display: -webkit-box;
-        text-overflow: ellipsis;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 2;
-      }
-      .item-intro+.item-intro{
-        margin-top: 1.334vw
-      }
-      .play-num{
-        font-size: 12px;
-        color:#999999;
-        position: absolute;
-        right: 4vw;
-        display: flex;
-        align-items: center;
-        bottom: 0;
-        line-height: 3.7352vw;
-        img{
-          width: 3.7352vw;
-          height: 3.7352vw;
-          margin-right: 1.0672vw;
-        }
-      }
-    }
-  }
+.list-icon-4 {
+  width: 6.1vw;
+  height: 6vw;
+  /* vertical-align: middle; */
 }
-.message{
-    width: 100vw;
-    height: 100vh;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position:fixed;
-    top:0;
-    left:0;
-    z-index: 9;
-    .mask{
-      width: 100vw;
-      height: 100vh;
-      background-color: rgba(0,0,0,.3);
-      position: absolute;
-      z-index: 1;
-    }
-    .form{
-      background-color: #ffffff;
-      border: 1px solid #eee;
-      border-radius: 5px;
-      padding: 2.667vw;
-      box-sizing: border-box;
-      width:46.667vw;
-      text-align:center;
-      z-index: 2;
-      input{
-        margin:2.4vw 0;
-        border-radius:3px;
-        border:1px solid #eee;
-        padding:1.334vw 2.667vw;
-        font-size:14px;
-      }
-    }
-  }
+.list-icon-5 {
+  width: 5.3vw;
+  height: 5.6vw;
+  /* vertical-align: middle; */
+}
+.list-icon-6 {
+  width: 5.87vw;
+  height: 5.87vw;
+  /* vertical-align: middle; */
+}
+.list-icon-7 {
+  width: 5.87vw;
+  height: 6.4vw;
+  /* vertical-align: middle; */
+}
+.icon {
+  margin-bottom: 1.3vw;
+}
+.list-text {
+  color: #432408;
+  font-size: 3.73vw;
+}
+.form-control {
+  display: block;
+  padding: 0 12px;
+  margin-bottom: 5px;
+  border: 1px solid #ccc;
+}
+
+.counter {
+  display: inline-block;
+  margin: 10px auto;
+  padding: 5px 10px;
+  color: blue;
+  border: 1px solid blue;
+}
 </style>

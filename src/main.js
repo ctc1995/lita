@@ -14,9 +14,10 @@ import {
 
 Vue.use(Carousel)
 Vue.use(CarouselItem)
-Vue.use(Message)
+// Vue.use(Message)
 
 Vue.config.productionTip = false
+Vue.prototype.$Message = Message
 Vue.prototype.$axios = axios
 Vue.prototype.$get = get
 Vue.prototype.$post = post
