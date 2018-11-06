@@ -25,6 +25,11 @@ export default new Router({
   routes: [
     {
       path: '/',
+      component: index
+    },
+    {
+      path: '/init',
+      name: 'init',
       component: init
     },
     {
@@ -41,11 +46,6 @@ export default new Router({
       path: '/home',
       name: 'home',
       component: home
-    },
-    {
-      path: '/init',
-      name: 'init',
-      component: init
     },
     {
       path: '/myfund',

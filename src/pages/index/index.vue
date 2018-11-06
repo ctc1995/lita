@@ -111,6 +111,7 @@ import tabBars from '../../components/footer'
 export default {
   data () {
     return {
+      wxCode: '',
       allShow: false,
       // 推荐人userid
       scene: null,
@@ -153,6 +154,48 @@ export default {
     tabBars
   },
   methods: {
+    // 注册
+    reg () {
+      this.userInfo['openid'] = this.$getStorage('openid')
+      this.userInfo['headavatar'] = this.$getStorage('headavatar')
+      this.userInfo['nickname'] = this.$getStorage('nickname')
+      // 用户注册
+      this.$post('Login/reg', this.userInfo).then((res) => {
+        console.log(res)
+        if (res.status === 200) {
+          // this.$router.replace({ path: 'index' })
+          // 获取用户的系统token
+          this.$post('Login/account_token', { openid: this.userInfo.openid }).then(res => {
+            if (res.data.code === 1) {
+              this.$setStorage('account_token', res.data.data['account_token'])
+              // 获取用户信息
+              let getUsrtInfoData = {
+                'openid': this.userInfo.openid,
+                'account_token': res.data.data['account_token']
+              }
+              // 获取用户信息
+              this.$post('user/get_info', getUsrtInfoData).then(res => {
+                console.log(res.data.data)
+                if (res.data.code === 1) {
+                  this.$setStorage('rank_id', res.data.data.rank_id)
+                  this.$setStorage('referee_id', res.data.data.referee_id)
+                  this.$setStorage('userid', res.data.data.userid)
+                  this.userInfo['rank_id'] = this.$getStorage('rank_id')
+                  this.userInfo['referee_id'] = this.$getStorage('referee_id')
+                  this.userInfo['userid'] = this.$getStorage('userid')
+                }
+              }).catch(err => {
+                console.log(err)
+              })
+            }
+          }).catch(err => {
+            console.log(err)
+          })
+        }
+      }).catch((err) => {
+        console.log(err)
+      })
+    },
     getUrl (pageType, id) {
       this.cardShow = false
       let route = {
@@ -232,14 +275,7 @@ export default {
     }
   },
   created () {
-    this.userInfo = {
-      userid: this.$getStorage('userid'),
-      headavatar: this.$getStorage('headavatar'),
-      nickname: this.$getStorage('nickname'),
-      openid: this.$getStorage('openid'),
-      rank_id: this.$getStorage('rank_id'),
-      referee_id: this.$getStorage('referee_id')
-    }
+    this.wxCode = window.location.search.replace('?', '').split('&')[0].split('=')[1]
     console.log(this.userInfo)
     this.$get('index/index').then(res => {
       console.log(res)
@@ -267,17 +303,12 @@ export default {
     }).then(err => {
       console.log(err)
     })
-    this.$get('login/get_company').then(res => {
-      console.log(res.data.data)
-      let obj = res.data.data
-      this.$setStorage('local_postage', obj.local_postage)
-      this.$setStorage('appid', obj.mpappid)
-      this.$setStorage('mch_id', obj.mch_id)
-      this.$setStorage('daili_fee', obj.daili_fee)
-      this.$setStorage('member_fee', obj.member_fee)
-      this.$setStorage('mch_id', obj.mch_id)
-      // this.totleFee = 1
-      this.totleFee = res.data.data.local_postage * 100
+    // 通过后台获取用户信息
+    this.$get('login/wxmp_token?code=' + this.wxCode).then(res => {
+      this.$setStorage('openid', res.data['openid'])
+      this.$setStorage('nickname', res.data['nickname'])
+      this.$setStorage('headavatar', res.data['headimgurl'])
+      this.reg()
     })
   }
 }
