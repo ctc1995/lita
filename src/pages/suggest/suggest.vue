@@ -73,9 +73,9 @@ export default {
       console.log(data)
       this.$post('user/feedback', data).then(res => {
         this.$Message({//eslint-disable-line
-            message: `谢谢留言!`,
-            type: 'success'
-          })
+          message: `谢谢留言!`,
+          type: 'success'
+        })
       })
     }
   }

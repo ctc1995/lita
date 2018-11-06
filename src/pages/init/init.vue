@@ -78,6 +78,7 @@ export default {
     this.$setStorage('daili_fee', 0.01)
     this.$setStorage('member_fee', 0.01)
     this.$setStorage('mch_id', '1516696021')
+    this.$setStorage('mch_key', 'taojiamintiandenghui199292408270')
     this.$setStorage('openid', 'odT745nH-xb2dNVrW7SyeFR5ROOI')
     this.$setStorage('nickname', 'ଘଓ')
     this.$setStorage('headavatar', 'http://thirdwx.qlogo.cn/mmopen/vi_32/HwUXX5POm5p8br65x42xEHCvLxuJLAxe3zBAnHjyKEGGEIrLFSeXkaU5h7yWib0GwLKrLQex8EffK7rLLFgMuTA/132')
@@ -99,7 +100,7 @@ export default {
     //   this.$setStorage('mch_id', obj.mch_id)
     //   this.$setStorage('daili_fee', obj.daili_fee)
     //   this.$setStorage('member_fee', obj.member_fee)
-    //   this.$setStorage('mch_id', obj.mch_id)
+    //   this.$setStorage('mch_key', obj.mch_key)
     //   // this.totleFee = 1
     //   this.totleFee = res.data.data.local_postage * 100
     // }).catch(err => {

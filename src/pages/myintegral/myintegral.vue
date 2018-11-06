@@ -21,7 +21,7 @@
             <img v-if="index==0" src="../../assets/images/first.png" width="25" class="rankImg">
             <img v-if="index==1" src="../../assets/images/second.png" width="25" class="rankImg">
             <img v-if="index==2" src="../../assets/images/third.png"  width="25" class="rankImg">
-            <p v-if="index>2" class="rankLv">{{index + 1 < 9 ? '0'+(index+1) : index+1}}</p>
+            <p v-if="index>2" class="rankLv">{{index + 1 > 9 ? index+1 : '0'+(index+1)}}</p>
             <img :src="item.headavatar" alt="" width="45" style="border-radius: 50%;margin: 0 10px;">
             <p>{{item.nickname}}</p>
           </div>

@@ -85,19 +85,19 @@ export default {
         }
       })
       // }
-    }
+    },
     // 统一下单
-    /* unifiedorder () {
+    unifiedorder () {
       let spbillCreateIp = '113.91.52.211'
-      this.http.get('ip', 'http://pv.sohu.com/cityjson?ie=utf-8').then(res => {
-        spbillCreateIp = res.data.cip
-      })
+      // this.http.get('ip', 'http://pv.sohu.com/cityjson?ie=utf-8').then(res => {
+      //   spbillCreateIp = res.data.cip
+      // })
       let nonceStr = this.$util.rand(Math.random() * 13467)
       let outTradeNo = this.$util.createNum(4)
       let notifyUrl = 'https://ysw.54yym.com/admin.php'
       let data = {
-        'appid': this.gobalData.appid,
-        'mch_id': this.gobalData.mch_id,
+        'appid': this.appid,
+        'mch_id': this.mch_id,
         'nonce_str': nonceStr,
         'body': this.orderBody,
         'out_trade_no': outTradeNo,
@@ -105,11 +105,11 @@ export default {
         'notify_url': notifyUrl,
         'spbill_create_ip': spbillCreateIp,
         'trade_type': 'JSAPI',
-        'openid': this.$util.getStorage('openid')
+        'openid': this.$getStorage('openid')
       }
-      // console.log(this.gobalData.appid, this.gobalData.mch_id, nonceStr, '利他盈利模式-书籍', outTradeNo, 15, spbillCreateIp, 'JSAPI')
-      let string1 = `appid=${this.gobalData.appid}&body=${this.orderBody}&mch_id=${this.gobalData.mch_id}&nonce_str=${nonceStr}&notify_url=${notifyUrl}&openid=${this.$util.getStorage('openid')}&out_trade_no=${outTradeNo}&spbill_create_ip=${spbillCreateIp}&total_fee=${this.totleFee}&trade_type=JSAPI`
-      string1 += `&key=${this.gobalData.key}`
+      // console.log(this.appid, this.mch_id, nonceStr, '利他盈利模式-书籍', outTradeNo, 15, spbillCreateIp, 'JSAPI')
+      let string1 = `appid=${this.appid}&body=${this.orderBody}&mch_id=${this.mch_id}&nonce_str=${nonceStr}&notify_url=${notifyUrl}&openid=${this.$getStorage('openid')}&out_trade_no=${outTradeNo}&spbill_create_ip=${spbillCreateIp}&total_fee=${this.totleFee}&trade_type=JSAPI`
+      string1 += `&key=${this.mch_key}`
       // console.log(string1)
       let sign = this.$md5(string1).toUpperCase()
       // console.log(sign)
@@ -120,9 +120,9 @@ export default {
       this.$post('Login/wx_unifiedorder', {'xml': this.$util.js2xml(data)}).then(res => {
         // console.log(res.data)
         this.prepayId = res.data.split('<prepay_id><![CDATA[')[1].split(']]></prepay_id>')[0]
-        this.pay()
+        // this.pay()
       })
-    }, */
+    }
     // 调起支付
     /* pay () {
       let that = this
