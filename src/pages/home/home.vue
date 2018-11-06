@@ -19,7 +19,7 @@
         <p class="card" style="font-size:26px;color:#000;text-align: center;">
           {{userInfo.nickname}}
         </p>
-        <p class="card" style="color: #FFD100; font-size:14px">
+        <p class="card" style="color: #FFD100; font-size:14px;text-align: center;">
           {{userInfo.rank_id == 0 ? '客户' : userInfo.rank_id == 1 ? '会员' : '代理人'}}
         </p>
         <!-- <card :text="'客户'" :textColor="'#FFD100'" :fontSize="14"></card> -->
