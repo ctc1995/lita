@@ -162,7 +162,7 @@ export default {
         route.path = 'audiolist/' + id
         // url = '../audio-list/main?pageId=' + id
       } else if (pageType === 'news') {
-        route.path = 'newlist/' + id
+        route.path = 'newdetail/' + id
         // url = '../new-detail/main?newId=' + id
       } else {
         route.path = 'index'
@@ -455,6 +455,7 @@ $navColors: (#FEE13F, #89F7FE, #FF5858, #FF9A9E,  #74EBD5);
     .navbar-icon{
       width: 11.7392vw;
       height: 11.7392vw;
+      text-align: center;
       margin-bottom: 2vw;
       border-radius: 5px;
       img{

@@ -12,6 +12,8 @@ const daili = () => import('@/pages/daili/daili')
 const outline = () => import('@/pages/outline/outline')
 const audiolist = () => import('@/pages/audiolist/audiolist')
 const videodetail = () => import('@/pages/videodetail/videodetail')
+const audiodetail = () => import('@/pages/audiodetail/audiodetail')
+const newdetail = () => import('@/pages/newdetail/newdetail')
 const home = () => import('@/pages/home/home')
 
 Vue.use(Router)
@@ -82,6 +84,18 @@ export default new Router({
       path: '/videodetail/:projectId',
       name: 'videodetail',
       component: videodetail,
+      props: true
+    },
+    {
+      path: '/audiodetail/:projectId',
+      name: 'audiodetail',
+      component: audiodetail,
+      props: true
+    },
+    {
+      path: '/newdetail/:newId',
+      name: 'newdetail',
+      component: newdetail,
       props: true
     }
   ]

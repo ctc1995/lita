@@ -99,7 +99,7 @@ export default {
       this.showShopCard = !this.showShopCard
     }
   },
-  beforeCreated () {
+  beforeCreate () {
     // this.userLevel = this.$getStorage('rank_id')
     this.userLevel = 1
   },
