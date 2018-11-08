@@ -15,7 +15,6 @@ export default {
 <style>
 @import url('./assets/styles/weui.min.css');
 * {
-  text-align: start;
   font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
 }
 html{
@@ -35,6 +34,7 @@ body{
 .new-detail p, .new-detail div {
   max-width: 91.977vw !important;
   text-indent: 30px;
+  text-align: start;
   font-size: 15px !important;
   line-height: 23px !important;
   float: none !important;

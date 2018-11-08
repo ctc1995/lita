@@ -15,7 +15,7 @@
         <!-- <open-data type="userNickName"></open-data> -->
         <!-- <card :text="rankName" :textColor="'#FFD100'" :fontSize="14"></card> -->
         <p class="card" style="color: #FFD100; font-size:14px">
-          {{userInfo.rank_id == 0 ? '客户' : userInfo.rank_id == 1 ? '会员' : '代理人'}}
+          {{userInfo.rank_id == 1 ? '客户' : userInfo.rank_id == 2 ? '会员' : '代理人'}}
         </p>
       </div>
       <span class="signin" @click="signinFunc()">{{signin}}</span>

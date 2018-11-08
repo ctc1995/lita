@@ -73,7 +73,7 @@ export default {
     this.$setStorage('account_token', 'fbb6555fc3268f4f4dc58aa8c87fc37d')
     this.$setStorage('local_postage', 9)
     this.$setStorage('appid', 'wxfd8f2476226e8867')
-    this.$setStorage('user_id', '73')
+    this.$setStorage('userid', '73')
     this.$setStorage('rank_id', 1)
     this.$setStorage('daili_fee', 0.01)
     this.$setStorage('member_fee', 0.01)

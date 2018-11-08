@@ -1,55 +1,26 @@
-<template class="home">
-  <div class="container">
-    <div class="input-item item">
-      <input class="weui-input" type="text" placeholder="收货人" v-model="name">
-      <div class="receive"><img src="../../assets/images/receive.png" alt=""></div>
-    </div>
-    <div class="input-item item">
-      <input class="weui-input" type="number" placeholder="手机号码" v-model="phone">
-      <div class="receive"><span>+86</span></div>
-    </div>
-    <!-- <div class="item input-item" @click="statusChange()">
-      <span >{{atext}}</span>
-      <div class="receive"><span class="rightspan"></span></div>
-    </div> -->
-    <el-cascader class="item input-item" :options="provinces" @active-item-change="handleItemChange" :props="props"></el-cascader>
-    <div class="spe-address item">
-      <!--<input class="weui-input" type="text" placeholder="详细地址：如路道号、门牌号、小区、楼栋号等" class="address-inp">-->
-      <textarea placeholder="详细地址：如路道号、门牌号、小区、楼栋号等" class="weui-textarea address-inp" style="color:#000000" v-model="address"></textarea>
-    </div>
-    <div class="item input-item defualtadd" >
-       <div class="receive"><span class="defaultset">设为默认地址</span></div>
-       <switch class="weui-switch"> </switch>
-    </div>
-    <button class="weui-btn save" @click="submitForm()">确认添加</button>
-    <div class="picker-view"  v-if="show" style="">
-      <div >
-      <div style="height:10% ;width:95%;margin-top:-12%">
-        <span @click="cityCancel" class="cancel">取消</span>
-        <span style="float: right" @click="citySure" class="confirm">确定</span>
-      </div>
-      <!--"可示默认的城市，使用后级联选择城市反应很慢就不使用了-->
-      <!-- <picker-view style="width: 100%; height:26.68vw;margin-top:2.668vw" @change="cityChange">
-        <picker-view-column >
-          <div class="picker-item" v-for="(item, index) in provinces" :key="index">
-            {{ item.area_name }}
-          </div>
-        </picker-view-column>
-        <picker-view-column >
-          <div class="picker-item" v-for="(item, index) in citys" :key="index">
-            {{ item.area_name }}
-          </div>
-        </picker-view-column>
-        <picker-view-column >
-          <div class="picker-item" v-for="(item, index) in areas" :key="index">
-            {{ item.area_name }}
-          </div>
-        </picker-view-column>
-      </picker-view> -->
-    </div>
-    </div>
-   </div>
-
+<template>
+  <el-form class="home" ref="form" :model="form" label-width="80px">
+    <el-form-item label="收货人">
+      <el-input v-model="form.name" placeholder="收货人"></el-input>
+    </el-form-item>
+    <el-form-item label="手机号码">
+      <el-input v-model="form.phone" placeholder="手机号码">
+        <i slot="suffix">+86</i>
+      </el-input>
+    </el-form-item>
+    <el-form-item label="省市区">
+      <el-cascader placeholder="省市区" class="item input-item" :options="provinces" @active-item-change="handleItemChange" :props="props"></el-cascader>
+    </el-form-item>
+    <el-form-item label="详细地址">
+      <el-input type="textarea" v-model="form.address" placeholder="路道名、门牌号、小区、楼栋号等"></el-input>
+    </el-form-item>
+    <el-form-item label="设为默认地址" label-width="9rem" sytle="text-align:start;">
+      <el-switch v-model="form.default"></el-switch>
+    </el-form-item>
+    <el-form-item label-width="0">
+      <el-button type="primary" @click="submitForm">立即提交</el-button>
+    </el-form-item>
+  </el-form>
 </template>
 
 <script>
@@ -58,10 +29,17 @@ import VDistpicker from 'v-distpicker'
 export default {
   data () {
     return {
+      appid: this.$getStorage('appid'),
+      openid: this.$getStorage('openid'),
+      mch_id: this.$getStorage('mch_id'),
+      mch_key: this.$getStorage('mch_key'),
       // http: new this.$util.Http(),
-      name: '',
-      phone: '',
-      address: '',
+      form: {
+        name: '',
+        phone: '',
+        address: '',
+        default: false
+      },
       userInfo: {},
       currentData: 0,
       menuType: 0,
@@ -253,42 +231,42 @@ export default {
       let paySign = this.$md5(string2)
         .toUpperCase()
         .toString()
-      // let that = this
+      let that = this
       console.log(nonceStr, timeStamp, packageVal, paySign)
       console.log(string2)
-      // wx.requestPayment({
-      //   // 'appId': this.gobalData.appid,
-      //   timeStamp: timeStamp,
-      //   nonceStr: nonceStr,
-      //   package: packageVal,
-      //   signType: 'MD5',
-      //   paySign: paySign,
-      //   success (res) {
-      //     console.log(res)
-      //     let data = {
-      //       account_token: that.$util.getStorage('account_token'),
-      //       userid: that.$util.getStorage('userId'),
-      //       price: that.totleFee,
-      //       product_id: 0,
-      //       postage: that.totleFee,
-      //       ordernum: that.prepayId,
-      //       status: 1,
-      //       address_id: addId,
-      //       type: 1
-      //     }
-      //     that.$post('user/add_order', data).then(res => {
-      //       // wx.showToast({
-      //       //   title: res.data.msg
-      //       // })
-      //     })
-      //   },
-      //   fail (res) {
-      //     console.log(res)
-      //   },
-      //   complete (res) {
-      //     console.log(res)
-      //   }
-      // })
+      WeixinJSBridge.invoke(//eslint-disable-line
+        'getBrandWCPayRequest', {
+          'appId': this.appid, // 公众号名称，由商户传入
+          'timeStamp': timeStamp, // 时间戳，自1970年以来的秒数
+          'nonceStr': nonceStr, // 随机串
+          'package': packageVal,
+          'signType': 'MD5', // 微信签名方式
+          'paySign': paySign // 微信签名
+        },
+        function (res) {
+          if (res.err_msg == 'get_brand_wcpay_request:ok') {//eslint-disable-line
+            console.log(res)
+            let data = {
+              account_token: that.$util.getStorage('account_token'),
+              userid: that.$util.getStorage('userId'),
+              price: that.totleFee,
+              product_id: 0,
+              postage: that.totleFee,
+              ordernum: that.prepayId,
+              status: 1,
+              address_id: addId,
+              type: 1
+            }
+            that.$post('user/add_order', data).then(res => {
+              that.$Message({
+                showClose: true,
+                message: res.data.msg,
+                type: 'success'
+              })
+            })
+          }
+        }
+      )
     },
     // 生成订单号
     createNum (index) {
@@ -431,6 +409,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.home{
+  padding: 10vw 6vw 10vw 3vw;
+}
 .container {
   min-height: 100vh;
   font-size: 14px;
@@ -449,10 +430,8 @@ export default {
   }
 }
 .item {
-  padding: 4vw;
   background-color: #ffffff;
   color: #999;
-  border-bottom: 1px solid #e6e6e6;
   .receive {
     display: flex;
     align-items: center;

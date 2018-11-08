@@ -15,7 +15,13 @@ import {
   Cascader,
   Loading,
   Tabs,
-  TabPane
+  TabPane,
+  Dialog,
+  Form,
+  FormItem,
+  Input,
+  Button,
+  Switch
 } from 'element-ui'
 
 Vue.use(Carousel)
@@ -23,6 +29,12 @@ Vue.use(CarouselItem)
 Vue.use(Cascader)
 Vue.use(Tabs)
 Vue.use(TabPane)
+Vue.use(Input)
+Vue.use(Button)
+Vue.use(Form)
+Vue.use(FormItem)
+Vue.use(Dialog)
+Vue.use(Switch)
 // Vue.use(MessageBox)
 
 Vue.prototype.$loading = Loading.service

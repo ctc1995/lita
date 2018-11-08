@@ -3,7 +3,7 @@
     <img mode="widthFix" src="http://54yym.com/a7a37201811020953435877.png" alt="980VIP">
     <div class="footer">
       <div class="btn price">
-        <p>￥980</p>
+        <p>{{dailiFee}}</p>
       </div>
       <div class="btn shop" @click="unifiedorder()">
         <span>成为代理</span>
@@ -16,8 +16,13 @@
 export default {
   data () {
     return {
-      // showCard: false,
+      appid: this.$getStorage('appid'),
+      openid: this.$getStorage('openid'),
+      mch_id: this.$getStorage('mch_id'),
+      mch_key: this.$getStorage('mch_key'),
+      rankid: 1,
       totleFee: 0,
+      dailiFee: 980,
       prepayId: '',
       orderBody: '利他盈利模式-代理人'
     }
@@ -57,58 +62,75 @@ export default {
       this.$post('Login/wx_unifiedorder', {'xml': this.$util.js2xml(data)}).then(res => {
         // console.log(res.data)
         this.prepayId = res.data.split('<prepay_id><![CDATA[')[1].split(']]></prepay_id>')[0]
-        // this.pay()
+        this.pay()
       })
-    }
+    },
     // 调起支付
-    /* pay () {
+    pay () {
       let that = this
       let nonceStr = this.$util.rand(Math.random() * 13467).toString()
       let timeStamp = Math.round(new Date().getTime() / 1000).toString()
       let packageVal = 'prepay_id=' + this.prepayId
-      let string2 = `appId=${this.gobalData.appid}&nonceStr=${nonceStr}&package=${packageVal}&signType=MD5&timeStamp=${timeStamp}`
-      string2 += `&key=${this.gobalData.key}`
+      let string2 = `appId=${this.appid}&nonceStr=${nonceStr}&package=${packageVal}&signType=MD5&timeStamp=${timeStamp}`
+      string2 += `&key=${this.mch_key}`
       let paySign = this.$md5(string2).toUpperCase().toString()
-      // let that = this
       console.log(nonceStr, timeStamp, packageVal, paySign)
       console.log(string2)
-      wx.requestPayment({
-        // 'appId': this.gobalData.appid,
-        'timeStamp': timeStamp,
-        'nonceStr': nonceStr,
-        'package': packageVal,
-        'signType': 'MD5',
-        'paySign': paySign,
-        'success': function (res) {
-          console.log(res)
-          let rankData = {
-            'userid': that.$util.getStorage('userId'),
-            'type': '3',
-            'account_token': that.$util.getStorage('account_token')
-          }
-          that.http.post(undefined, 'user/upgrade_member', rankData).then(res => {
-            if (res.data.code === 1) {
-              wx.showToast({
-                title: '请重新进入小程序,以生效身份!',
-                icon: 'none'
-              })
+      WeixinJSBridge.invoke(//eslint-disable-line
+        'getBrandWCPayRequest', {
+          'appId': this.appid, // 公众号名称，由商户传入
+          'timeStamp': timeStamp, // 时间戳，自1970年以来的秒数
+          'nonceStr': nonceStr, // 随机串
+          'package': packageVal,
+          'signType': 'MD5', // 微信签名方式
+          'paySign': paySign // 微信签名
+        },
+        function (res) {
+          if (res.err_msg == 'get_brand_wcpay_request:ok') {//eslint-disable-line
+            let rankData = {
+              'userid': that.$getStorage('userId'),
+              'type': '3',
+              'account_token': that.$getStorage('account_token')
             }
-          })
-        },
-        'fail': function (res) {
-          console.log(res)
-        },
-        'complete': function (res) {
-          console.log(res)
+            that.http.post(undefined, 'user/upgrade_member', rankData).then(res => {
+              if (res.data.code === 1) {
+                that.$Message({
+                  showClose: true,
+                  message: '支付成功！代理身份生效',
+                  type: 'success'
+                })
+                that.$setStorage('rank_id', 3)
+              } else {
+                that.$Message({
+                  showClose: true,
+                  message: res.data.msg + ' 请联系管理员',
+                  type: 'error'
+                })
+              }
+            })
+            // 使用以上方式判断前端返回,微信团队郑重提示：
+            // res.err_msg将在用户支付成功后返回ok，但并不保证它绝对可靠。
+          } else {
+            console.log(res)
+          }
         }
-      })
-    } */
+      )
+    }
   },
   created () {
     this.$get('login/get_company').then(res => {
       console.log(res.data.data)
       // this.totleFee = 1
-      this.totleFee = res.data.data.daili_fee * 100
+      this.rankid = this.$getStorage('rank_id')
+      if (this.rankid == 2) {//eslint-disable-line
+        this.dailiFee = '￥' + res.data.data.daili_fee - res.data.data.member_fee + '/会员折扣'
+        this.totleFee = this.dailiFee * 100
+      } else if (this.rankid == 3) {//eslint-disable-line
+        this.dailiFee = '已是代理身份'
+      } else if (this.rankid == 1) {//eslint-disable-line
+        this.dailiFee = '￥' + res.data.data.daili_fee
+        this.totleFee = this.dailiFee * 100
+      }
     })
   }
 }
