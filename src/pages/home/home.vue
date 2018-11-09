@@ -5,7 +5,7 @@
         <img src="../../assets/images/header.png" class="header-img"/>
         <!-- <button class="bind-phone" open-type="getPhoneNumber" @getphonenumber="getPhoneNumber">绑定手机</button> -->
         <button class="bind-phone" @click="bindPhone(true)">绑定手机</button>
-        <a href="../mymessage/main" class="setting"><img src="../../assets/images/setting.png" /></a>
+        <router-link to="/mymessage" class="setting"><img src="../../assets/images/setting.png" /></router-link>
     </div>
     <!-- 个人信息 -->
     <div class="userinfo">
@@ -16,10 +16,10 @@
       <div class="userinfo-nickname">
         <!-- <card :text="nickName" :font-size="18"></card> -->
         <!-- <open-data type="userNickName"></open-data> -->
-        <p class="card" style="font-size:26px;color:#000;text-align: center;">
+        <p class="card" style="font-size:1.5rem;color:#000;text-align: center;">
           {{userInfo.nickname}}
         </p>
-        <p class="card" style="color: #FFD100; font-size:14px;text-align: center;">
+        <p class="card" style="color: #FFD100; font-size:1.2rem;text-align: center;">
           {{userInfo.rank_id == 0 ? '客户' : userInfo.rank_id == 1 ? '会员' : '代理人'}}
         </p>
         <!-- <card :text="'客户'" :textColor="'#FFD100'" :fontSize="14"></card> -->

@@ -266,6 +266,17 @@ export default {
     }).then(err => {
       console.log(err)
     })
+    // wx.ready(function () {//eslint-disable-line
+    //   wx.updateAppMessageShareData({//eslint-disable-line
+    //     title: '利他盈利模式', // 分享标题
+    //     desc: '利他盈利模式', // 分享描述
+    //     link: window.location.href, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+    //     success: function () {
+    //       console.log('设置分享成功!')
+    //       // 设置成功
+    //     }
+    //   })
+    // })
   }
 }
 </script>

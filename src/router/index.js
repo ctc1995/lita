@@ -1,27 +1,28 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-const init = () => import('@/pages/init/init')
-const index = () => import('@/pages/index/index')
-const lita = () => import('@/pages/lita/lita')
-const songshu = () => import('@/pages/songshu/songshu')
-const addition = () => import('@/pages/addition/addition')
-const counter = () => import('@/pages/counter/counter')
-const shop = () => import('@/pages/shop/shop')
-const daili = () => import('@/pages/daili/daili')
-const outline = () => import('@/pages/outline/outline')
-const audiolist = () => import('@/pages/audiolist/audiolist')
-const videodetail = () => import('@/pages/videodetail/videodetail')
-const audiodetail = () => import('@/pages/audiodetail/audiodetail')
-const newdetail = () => import('@/pages/newdetail/newdetail')
-const home = () => import('@/pages/home/home')
-const myfund = () => import('@/pages/myfund/myfund')
-const extend = () => import('@/pages/extend/extend')
-const myintegral = () => import('@/pages/myintegral/myintegral')
-const coursebuy = () => import('@/pages/coursebuy/coursebuy')
-const collect = () => import('@/pages/collect/collect')
-const addmanage = () => import('@/pages/addmanage/addmanage')
-const suggest = () => import('@/pages/suggest/suggest')
+const init = () => import('../pages/init/init')
+const index = () => import('../pages/index/index')
+const lita = () => import('../pages/lita/lita')
+const songshu = () => import('../pages/songshu/songshu')
+const addition = () => import('../pages/addition/addition')
+const counter = () => import('../pages/counter/counter')
+const shop = () => import('../pages/shop/shop')
+const daili = () => import('../pages/daili/daili')
+const outline = () => import('../pages/outline/outline')
+const audiolist = () => import('../pages/audiolist/audiolist')
+const videodetail = () => import('../pages/videodetail/videodetail')
+const audiodetail = () => import('../pages/audiodetail/audiodetail')
+const newdetail = () => import('../pages/newdetail/newdetail')
+const home = () => import('../pages/home/home')
+const myfund = () => import('../pages/myfund/myfund')
+const extend = () => import('../pages/extend/extend')
+const myintegral = () => import('../pages/myintegral/myintegral')
+const coursebuy = () => import('../pages/coursebuy/coursebuy')
+const collect = () => import('../pages/collect/collect')
+const addmanage = () => import('../pages/addmanage/addmanage')
+const mymessage = () => import('../pages/mymessage/mymessage')
+const suggest = () => import('../pages/suggest/suggest')
 Vue.use(Router)
 
 export default new Router({
@@ -138,6 +139,11 @@ export default new Router({
       path: '/suggest',
       name: 'suggest',
       component: suggest
+    },
+    {
+      path: '/mymessage',
+      name: 'mymessage',
+      component: mymessage
     }
   ]
 })

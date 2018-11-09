@@ -23,11 +23,13 @@
       <div class="modelCard" v-if="cardShow">
         <div class="mask" @click="hideCard()"></div>
         <div class="code">
-          <span class="save" @click="saveImg()">保存到相册</span>
-          <img :src="'data:image/png;base64,'+codeImg" alt="小程序码">
+          <!-- <span class="save" @click="saveImg()">保存到相册</span> -->
+          <!-- <img :src="'data:image/png;base64,'+codeImg" alt="小程序码"> -->
+          <qrcode-vue class="qrcode" :value="qrcode.value" :size="qrcode.size" level="H"></qrcode-vue>
           <p>「长按二维码打开小程序」</p>
           <div class="avatar">
             <!-- <open-data type="userAvatarUrl"></open-data> -->
+            <img :src="headavatar" :alt="nickName">
           </div>
         </div>
         <span class="close" @click="hideCard()">X</span>
@@ -37,14 +39,24 @@
 
 <script>
 import { formatTime } from '../../services/util'
+import QrcodeVue from 'qrcode.vue'
 
 export default {
+  components: {
+    QrcodeVue
+  },
   data () {
     return {
       root: this.root,
       codeImg: ``,
       cardShow: false,
-      extendList: []
+      extendList: [],
+      nickName: this.$getStorage('nickname'),
+      headavatar: this.$getStorage('headavatar'),
+      qrcode: {
+        value: 'https://www.baidu.com/',
+        size: 200
+      }
     }
   },
   created: function () {
@@ -65,10 +77,6 @@ export default {
         this.extendList.push(obj)
       }
     })
-    this.$get(`Login/getwxacodeunlimit?scene=${this.$getStorage('user_id')}&width=430&wxToken=${this.$getStorage('wxToken')}`)
-      .then(res => {
-        this.codeImg = res.data
-      })
   },
 
   methods: {
@@ -122,6 +130,9 @@ export default {
     },
     tuiguang () {
       this.cardShow = true
+      this.$get(`Login/getwxacodeunlimit?scene=${this.$getStorage('user_id')}&width=430&wxToken=${this.$getStorage('wxToken')}`).then(res => {
+        this.codeImg = res.data
+      })
     },
     hideCard () {
       this.cardShow = false
@@ -131,6 +142,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.container{
+    position: relative;
+    height: 100vh;
+}
 .modelCard {
   width: 100vw;
   height: 100%;
@@ -182,15 +197,14 @@ export default {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    img {
-      width: 57.3vw;
-      height: 57.3vw;
-    }
     p {
       text-align: center;
       font-size: 4.27vw;
       margin-top: 1.33vw;
       margin-bottom: 4vw;
+    }
+    .qrcode{
+      margin-top: 20px;
     }
     .avatar {
       overflow: hidden;
@@ -199,6 +213,10 @@ export default {
       height: 10.7vw;
       display: flex;
       justify-content: center;
+      img{
+        width: 100%;
+        height: 100%;
+      }
     }
   }
 }

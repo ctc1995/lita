@@ -233,6 +233,7 @@ export default {
   padding: 4.9321vw 4vw;
   position: relative;
   z-index: 1;
+  text-align: start;
   .audio-title,
   .audio-list-title {
     font-size: 16px;

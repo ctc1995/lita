@@ -107,7 +107,7 @@ export default {
     //   console.log(err)
     // })
     // // 通过后台获取用户信息
-    // this.$get('login/wxmp_token?code=' + this.wxCode).then(res => {
+    // this.$get(`login/wxmp_token?code=${this.wxCode}`).then(res => {
     //   this.loading = this.$loading({
     //     lock: true,
     //     text: '数据加载中',
