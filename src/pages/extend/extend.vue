@@ -24,9 +24,9 @@
         <div class="mask" @click="hideCard()"></div>
         <div class="code">
           <!-- <span class="save" @click="saveImg()">保存到相册</span> -->
-          <!-- <img :src="'data:image/png;base64,'+codeImg" alt="小程序码"> -->
+          <!-- <img :src="'data:image/png;base64,'+codeImg" alt="公众号码"> -->
           <qrcode-vue class="qrcode" :value="qrcode.value" :size="qrcode.size" level="H"></qrcode-vue>
-          <p>「长按二维码打开小程序」</p>
+          <p>「扫描二维码进入利他」</p>
           <div class="avatar">
             <!-- <open-data type="userAvatarUrl"></open-data> -->
             <img :src="headavatar" :alt="nickName">
@@ -53,15 +53,16 @@ export default {
       extendList: [],
       nickName: this.$getStorage('nickname'),
       headavatar: this.$getStorage('headavatar'),
+      userid: this.$getStorage('userid'),
       qrcode: {
-        value: 'https://www.baidu.com/',
+        value: 'http://ysw.arwli.top/',
         size: 200
       }
     }
   },
   created: function () {
     let starData = {
-      userid: this.$getStorage('user_id'),
+      userid: this.userid,
       account_token: this.$getStorage('account_token')
     }
     this.$post('user/my_extension', starData).then(res => {
@@ -81,48 +82,48 @@ export default {
 
   methods: {
     saveImg () {
-    //   let that = this
-    //   wx.getSetting({
-    //     success (res) {
-    //       if (!res.authSetting['scope.writePhotosAlbum']) {
-    //         wx.authorize({
-    //           scope: 'scope.writePhotosAlbum',
-    //           success () {
-    //             const fileManager = wx.getFileSystemManager()
-    //             fileManager.writeFile({
-    //               filePath: wx.env.USER_DATA_PATH + '/code.png',
-    //               data: that.codeImg,
-    //               encoding: 'base64',
-    //               success: res => {
-    //                 wx.saveImageToPhotosAlbum({
-    //                   filePath: wx.env.USER_DATA_PATH + '/code.png',
-    //                   success: res => {
-    //                     console.log(res)
-    //                   },
-    //                   fail: err => {
-    //                     console.log(err)
-    //                   }
-    //                 })
-    //               },
-    //               fail: err => {
-    //                 console.log(err)
-    //               }
-    //             })
-    //           }
-    //         })
-    //       } else {
-    //         wx.saveImageToPhotosAlbum({
-    //           filePath: wx.env.USER_DATA_PATH + '/code.png',
-    //           success: res => {
-    //             console.log(res)
-    //           },
-    //           fail: err => {
-    //             console.log(err)
-    //           }
-    //         })
-    //       }
-    //     }
-    //   })
+      /* let that = this
+      wx.getSetting({
+        success (res) {
+          if (!res.authSetting['scope.writePhotosAlbum']) {
+            wx.authorize({
+              scope: 'scope.writePhotosAlbum',
+              success () {
+                const fileManager = wx.getFileSystemManager()
+                fileManager.writeFile({
+                  filePath: wx.env.USER_DATA_PATH + '/code.png',
+                  data: that.codeImg,
+                  encoding: 'base64',
+                  success: res => {
+                    wx.saveImageToPhotosAlbum({
+                      filePath: wx.env.USER_DATA_PATH + '/code.png',
+                      success: res => {
+                        console.log(res)
+                      },
+                      fail: err => {
+                        console.log(err)
+                      }
+                    })
+                  },
+                  fail: err => {
+                    console.log(err)
+                  }
+                })
+              }
+            })
+          } else {
+            wx.saveImageToPhotosAlbum({
+              filePath: wx.env.USER_DATA_PATH + '/code.png',
+              success: res => {
+                console.log(res)
+              },
+              fail: err => {
+                console.log(err)
+              }
+            })
+          }
+        }
+      }) */
     },
     bindViewTap () {
     //   const url = '../logs/main'
@@ -130,9 +131,10 @@ export default {
     },
     tuiguang () {
       this.cardShow = true
-      this.$get(`Login/getwxacodeunlimit?scene=${this.$getStorage('user_id')}&width=430&wxToken=${this.$getStorage('wxToken')}`).then(res => {
-        this.codeImg = res.data
-      })
+      this.qrcode.value = 'http://ysw.arwli.top?scene=' + this.userid
+      // this.$get(`Login/getwxacodeunlimit?scene=${this.$getStorage('user_id')}&width=430&wxToken=${this.$getStorage('wxToken')}`).then(res => {
+      //   this.codeImg = res.data
+      // })
     },
     hideCard () {
       this.cardShow = false

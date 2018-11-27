@@ -3,26 +3,29 @@
       <!-- <scroll-view class="scroll-view_H audio-list"
         scroll-x
         style="width: 100%"> -->
-    <div class="scroll-view-item_H audio-item"
-      :id="index"
-      v-for="(item, index) in pageList"
-      :key="index"
-      @click="getUrl(item.title, item.id)">
-      <div class="left-view">
-        <img :src="item.img" :alt="item.title" class="audio-img">
-        <a href="" class="play-audio" v-if="pageId!=='written'">
-          <!-- <img src="../../assets/images/left-play.png"> -->
-        </a>
+    <scroller
+      :on-infinite="infinite">
+      <div class="scroll-view-item_H audio-item"
+        :id="index"
+        v-for="(item, index) in pageList"
+        :key="index"
+        @click="getUrl(item.title, item.id)">
+        <div class="left-view">
+          <img :src="item.img" :alt="item.title" class="audio-img">
+          <a href="" class="play-audio" v-if="pageId!=='written'">
+            <!-- <img src="../../assets/images/left-play.png"> -->
+          </a>
+        </div>
+        <div class="right-view">
+            <p class="item-title">{{item.title}}</p>
+            <p class="item-intro" v-if="pageId==='written'">{{item.intro}}</p>
+            <span class="play-num">
+              <img src="../../assets/images/playing.png">
+              <span>{{item.playNum}}</span>人播放
+            </span>
+        </div>
       </div>
-      <div class="right-view">
-          <p class="item-title">{{item.title}}</p>
-          <p class="item-intro" v-if="pageId==='written'">{{item.intro}}</p>
-          <span class="play-num">
-            <img src="../../assets/images/playing.png">
-            <span>{{item.playNum}}</span>人播放
-          </span>
-      </div>
-    </div>
+    </scroller>
       <!-- </scroll-view> -->
   </div>
 </template>
@@ -35,7 +38,8 @@ export default {
       // http: new this.$util.Http(),
       scrollTop: 0,
       // pageId: 0,
-      pageList: []
+      pageList: [],
+      pageIndex: 0
     }
   },
   methods: {
@@ -54,6 +58,25 @@ export default {
       console.log(route)
       this.$router.push(route)
       // wx.navigateTo({ url })
+    },
+    infinite: function (done) {
+      var that = this
+      setTimeout(function () {
+        that.$get(`index/product_list?cat_id=${that.pageId}&page=${that.pageIndex}`).then(res => {
+          that.pageIndex += 1
+          console.log(res.data)
+          for (let item of res.data.data) {
+            let obj = {
+              id: item.id,
+              img: item.cover,
+              title: item.name,
+              playNum: item.browse_num,
+              intro: Object.keys(item).indexOf('intro') === -1 ? item.intro : ''
+            }
+            that.pageList.push(obj)
+          }
+        })
+      }, 1500)
     }
   },
   // 页面初始化
@@ -74,7 +97,8 @@ export default {
     //     title: '文章阅读'
     //   })
     }
-    this.$get(`index/product_list?cat_id=${this.pageId}&page=0`).then(res => {
+    this.$get(`index/product_list?cat_id=${this.pageId}&page=${this.pageIndex}`).then(res => {
+      this.pageIndex += 1
       console.log(res.data)
       this.pageList = []
       for (let item of res.data.data) {
@@ -92,6 +116,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+.audio{
+  min-height: 100vh;
+}
   .audio-item{
     width:91.799vw;
     max-height: 37.0574vw;

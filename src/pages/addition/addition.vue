@@ -4,12 +4,12 @@
       <el-input v-model="form.name" placeholder="收货人"></el-input>
     </el-form-item>
     <el-form-item label="手机号码">
-      <el-input v-model="form.phone" placeholder="手机号码">
+      <el-input type="number" v-model="form.phone" placeholder="手机号码">
         <i slot="suffix">+86</i>
       </el-input>
     </el-form-item>
     <el-form-item label="省市区">
-      <el-cascader placeholder="省市区" class="item input-item" :options="provinces" @active-item-change="handleItemChange" :props="props"></el-cascader>
+      <el-cascader placeholder="省市区" class="item input-item" :options="provinces" @change="change" @active-item-change="handleItemChange" :props="props"></el-cascader>
     </el-form-item>
     <el-form-item label="详细地址">
       <el-input type="textarea" v-model="form.address" placeholder="路道名、门牌号、小区、楼栋号等"></el-input>
@@ -65,7 +65,8 @@ export default {
       prepayId: '',
       totleFee: 0,
       props: {
-        value: 'area_name',
+        label: 'area_name',
+        value: 'area_id',
         children: 'cities'
       }
       // animation: {}
@@ -75,90 +76,76 @@ export default {
     VDistpicker
   },
   created () {
-    // this.scene = res.userId
-    // wx.showToast({title: res.userId})
-    // this.areas = city.areas
-    // this.citys = city.citys
-    // this.provinces = city.provinces
-    let provinceData = {
-      type: 1,
-      area_parent_id: 0
-    }
-    this.$post('Index/province_city_area', provinceData).then(res => {
-      this.provinces = res.data.data
-      this.provincesKey = this.provinces[0].area_id
-      let cityData = {
-        type: 2,
-        area_parent_id: this.provinces[0].area_id
+    this.$wxJS(location.href.split('#')[0])
+    this.$get('Index/province_city_area').then(res => {
+      for (const item of res.data.data) {
+        let obj = item
+        obj['cities'] = []
+        this.provinces.push(obj)
       }
-      this.$post('Index/province_city_area', cityData).then(res => {
-        this.provinces['cities'] = res.data.data
-        // this.citys = res.data.data
-        let areasData = {
-          type: 3,
-          area_parent_id: this.provinces.cities[0].area_id
-        }
-        this.$post('Index/province_city_area', areasData).then(res => {
-          this.provinces['cities'][0]['cities'] = res.data.data
-          console.log(this.provinces)
-        })
-      })
+      this.provincesKey = this.provinces[0].area_id
     })
-    // console.log(city)
-    // this.animation = wx.createAnimation({
-    //   duration: 500,
-    //   transformOrigin: '50% 50%',
-    //   timingFunction: 'ease'
-    // })
-    // this.totleFee = 1
-    this.totleFee = this.$getStorage('local_postage')
-    // userTopRanking({}).then(response => {
-    //   this.rankList = response.data
-    // })
+    this.totleFee = this.$getStorage('local_postage') * 100
   },
   methods: {
+    getIndex (obj, id) {
+      // let newObj = {};
+      for (let index in obj) {
+        if (obj[index]['area_id'] === id) {
+          return parseInt(index)
+        }
+      }
+    },
+    selAddress (val) {
+      let that = this
+      let provinceIndex = val[0]
+      let cityIndex = this.getIndex(that.provinces[provinceIndex - 1]['cities'], val[1]) || 0
+      if (
+        that.provinces[provinceIndex - 1]['area_deep'] === 1 &&
+        that.provinces[provinceIndex - 1]['cities'].length === 0) {
+        console.log(1)
+        that.provincesKey = that.provinces[provinceIndex - 1]['area_id']
+        let cityData = {
+          type: 2,
+          area_parent_id: that.provincesKey
+        }
+        that.$post('Index/province_city_area', cityData).then(res => {
+          for (const item of res.data.data) {
+            let obj = item
+            obj['cities'] = []
+            that.provinces[provinceIndex - 1]['cities'].push(obj)
+          }
+        })
+      } else if (
+        that.provinces[provinceIndex - 1]['cities'][cityIndex]['area_deep'] === 2 &&
+        that.provinces[provinceIndex - 1]['cities'][cityIndex]['cities'].length === 0) {
+        console.log(2)
+        that.citysKey = that.provinces[provinceIndex - 1]['cities'][cityIndex]['area_id']
+        let cityData = {
+          type: 3,
+          area_parent_id: that.citysKey
+        }
+        that.$post('Index/province_city_area', cityData).then(res => {
+          for (const item of res.data.data) {
+            let obj = item
+            // obj['cities'] = []
+            that.provinces[provinceIndex - 1]['cities'][cityIndex]['cities'].push(obj)
+          }
+        })
+      } else {
+        console.log(3)
+        let areaIndex = this.getIndex(that.provinces[provinceIndex - 1]['cities'][cityIndex]['cities'], val[2]) || 0
+        console.log('hahaha' + areaIndex)
+        that.areasKey = that.provinces[provinceIndex - 1]['cities'][cityIndex]['cities'][areaIndex]['area_id']
+      }
+    },
+    change (val) {
+      console.log(val)
+      this.selAddress(val)
+    },
     handleItemChange (val) {
       console.log(val)
-      // let value = val
-      // this.swipArr = value
-      // let that = this
-      // if (
-      //   that.citys.length <= 0 ||
-      //   that.provincesKey !== that.provinces[value[0]].area_id
-      // ) {
-      //   that.citys = []
-      //   that.provincesKey = that.provinces[value[0]].area_id
-      //   let cityData = {
-      //     type: 2,
-      //     area_parent_id: that.provincesKey
-      //   }
-      //   that.$post('Index/province_city_area', cityData).then(res => {
-      //     that.citys = res.data.data
-      //     that.citysKey = that.citys[0].area_id
-      //     let areasData = {
-      //       type: 3,
-      //       area_parent_id: that.citys[0].area_id
-      //     }
-      //     that.$post('Index/province_city_area', areasData).then(res => {
-      //       that.areas = res.data.data
-      //     })
-      //   })
-      // } else if (
-      //   that.areas.length <= 0 ||
-      //   that.citysKey !== that.citys[value[1]].area_id
-      // ) {
-      //   that.areas = []
-      //   that.citysKey = that.citys[value[1]].area_id
-      //   let areasData = {
-      //     type: 3,
-      //     area_parent_id: that.citysKey
-      //   }
-      //   that.$post('Index/province_city_area', areasData).then(res => {
-      //     that.areas = res.data.data
-      //   })
-      // } else {
-      //   that.areasKey = that.areas[value[2]].area_id
-      // }
+      this.selAddress(val)
     },
     // json转义XML
     js2xml (obj) {
@@ -173,15 +160,12 @@ export default {
     // 统一下单
     unifiedorder (addId) {
       let spbillCreateIp = '113.91.52.211'
-      this.http.get('ip', 'http://pv.sohu.com/cityjson?ie=utf-8').then(res => {
-        spbillCreateIp = res.data.cip
-      })
       let nonceStr = this.rand(Math.random() * 13467)
       let outTradeNo = this.createNum(4)
       let notifyUrl = 'https://ysw.54yym.com/admin.php'
       let data = {
-        appid: this.gobalData.appid,
-        mch_id: this.gobalData.mch_id,
+        appid: this.appid,
+        mch_id: this.mch_id,
         nonce_str: nonceStr,
         body: '利他盈利模式-书籍',
         out_trade_no: outTradeNo,
@@ -193,15 +177,15 @@ export default {
       }
       // console.log(this.gobalData.appid, this.gobalData.mch_id, nonceStr, '利他盈利模式-书籍', outTradeNo, 15, spbillCreateIp, 'JSAPI')
       let string1 = `appid=${
-        this.gobalData.appid
+        this.appid
       }&body=利他盈利模式-书籍&mch_id=${
-        this.gobalData.mch_id
+        this.mch_id
       }&nonce_str=${nonceStr}&notify_url=${notifyUrl}&openid=${this.$getStorage(
         'openid'
       )}&out_trade_no=${outTradeNo}&spbill_create_ip=${spbillCreateIp}&total_fee=${
         this.totleFee
       }&trade_type=JSAPI`
-      string1 += `&key=${this.gobalData.key}`
+      string1 += `&key=${this.mch_key}`
       // console.log(string1)
       let sign = this.$md5(string1).toUpperCase()
       // console.log(sign)
@@ -224,10 +208,8 @@ export default {
       let nonceStr = this.rand(Math.random() * 13467).toString()
       let timeStamp = Math.round(new Date().getTime() / 1000).toString()
       let packageVal = 'prepay_id=' + this.prepayId
-      let string2 = `appId=${
-        this.gobalData.appid
-      }&nonceStr=${nonceStr}&package=${packageVal}&signType=MD5&timeStamp=${timeStamp}`
-      string2 += `&key=${this.gobalData.key}`
+      let string2 = `appId=${this.appid}&nonceStr=${nonceStr}&package=${packageVal}&signType=MD5&timeStamp=${timeStamp}`
+      string2 += `&key=${this.mch_key}`
       let paySign = this.$md5(string2)
         .toUpperCase()
         .toString()
@@ -248,7 +230,7 @@ export default {
             console.log(res)
             let data = {
               account_token: that.$util.getStorage('account_token'),
-              userid: that.$util.getStorage('userId'),
+              userid: that.$util.getStorage('userid'),
               price: that.totleFee,
               product_id: 0,
               postage: that.totleFee,
@@ -290,119 +272,27 @@ export default {
       let data = {
         userid: this.$getStorage('userid'),
         account_token: this.$getStorage('account_token'),
-        truename: this.name,
-        tel: this.phone,
+        truename: this.form.name,
+        tel: this.form.phone,
         province: this.provincesKey,
         city: this.citysKey,
         area: this.areasKey,
-        detailed: this.address,
-        type: 1
+        detailed: this.form.address
       }
-      // let that = this
+      this.form.default ? data.type = 1 : data.type = 0
+      console.log(data)
       this.$post('User/add_mod_address', data).then(res => {
-        console.log(res.data)
-        // let addId = res.data.data.address_id
-        // wx.showModal({
-        //   title: '地址提交成功',
-        //   content: '请支付邮费',
-        //   success (res) {
-        //     console.log(res)
-        //     if (res.confirm) {
-        //       that.unifiedorder(addId)
-        //     } else {
-        //       wx.showToast({
-        //         title: '支付邮费后才能领取书籍'
-        //       })
-        //     }
-        //   }
-        // })
-      })
-    },
-    selectCitys (obj) {
-      console.log(obj)
-    },
-    statusChange () {
-      this.show = true
-    },
-    selectAreas (obj) {
-      console.log(obj)
-    },
-    cityCancel (e) {
-      this.show = false
-    },
-    // 点击地区选择确定按钮
-    citySure (e) {
-      this.show = false
-      this.atext =
-        this.provinces[this.swipArr[0]].area_name +
-        this.citys[this.swipArr[1]].area_name +
-        this.areas[this.swipArr[2]].area_name
-      let provinceData = {
-        type: 1,
-        area_parent_id: 0
-      }
-      let that = this
-      that.$post('Index/province_city_area', provinceData).then(res => {
-        that.provinces = res.data.data
-        that.provincesKey = that.provinces[0].area_id
-        let cityData = {
-          type: 2,
-          area_parent_id: that.provinces[0].area_id
-        }
-        that.$post('Index/province_city_area', cityData).then(res => {
-          that.citys = res.data.data
-          let areasData = {
-            type: 3,
-            area_parent_id: that.citys[0].area_id
-          }
-          that.$post('Index/province_city_area', areasData).then(res => {
-            that.areas = res.data.data
-          })
+        let addId = res.data.data.address_id
+        this.$confirm(`请支付${this.$getStorage('local_postage')}元邮费，领取书籍。`, '地址提交成功', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'info'
+        }).then((res) => {
+          this.unifiedorder(addId)
+        }).catch((res) => {
+          this.$Message.error('支付邮费后才能领取书籍')
         })
       })
-      this.swipArr = [0, 0, 0]
-    },
-    cityChange (e) {
-      let value = e.mp.detail.value
-      this.swipArr = value
-      let that = this
-      if (
-        that.citys.length <= 0 ||
-        that.provincesKey !== that.provinces[value[0]].area_id
-      ) {
-        that.citys = []
-        that.provincesKey = that.provinces[value[0]].area_id
-        let cityData = {
-          type: 2,
-          area_parent_id: that.provincesKey
-        }
-        that.$post('Index/province_city_area', cityData).then(res => {
-          that.citys = res.data.data
-          that.citysKey = that.citys[0].area_id
-          let areasData = {
-            type: 3,
-            area_parent_id: that.citys[0].area_id
-          }
-          that.$post('Index/province_city_area', areasData).then(res => {
-            that.areas = res.data.data
-          })
-        })
-      } else if (
-        that.areas.length <= 0 ||
-        that.citysKey !== that.citys[value[1]].area_id
-      ) {
-        that.areas = []
-        that.citysKey = that.citys[value[1]].area_id
-        let areasData = {
-          type: 3,
-          area_parent_id: that.citysKey
-        }
-        that.$post('Index/province_city_area', areasData).then(res => {
-          that.areas = res.data.data
-        })
-      } else {
-        that.areasKey = that.areas[value[2]].area_id
-      }
     }
   }
 }

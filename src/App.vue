@@ -8,7 +8,25 @@
 <script>
 
 export default {
-  name: 'App'
+  name: 'App',
+  created () {
+    this.$wxJS(location.href.split('#')[0])
+    let that = this
+    this.$wx.ready(function () {
+      console.log('wx初始化成功！')
+      that.$wx.hideAllNonBaseMenuItem()
+      // that.$wx.updateAppMessageShareData({
+      //   title: '利他盈利', // 分享标题
+      //   desc: '利他盈利描述', // 分享描述
+      //   link: `http://ysw.arwli.top/?scene=${that.$getStorage('userid')}`, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+      //   imgUrl: '', // 分享图标
+      //   success: function () {
+      //     // 设置成功
+      //     console.log('分享设置成功！')
+      //   }
+      // })
+    })
+  }
 }
 </script>
 
@@ -24,6 +42,7 @@ body{
   position: relative;
   margin: 0;
   padding: 0;
+  background-color: #fff;
 }
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;

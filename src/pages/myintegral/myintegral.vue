@@ -60,7 +60,7 @@ export default {
     },
     getUserInfo () {
       let data = {
-        userid: this.$getStorage('user_id'),
+        userid: this.$getStorage('userid'),
         type: 2,
         account_token: this.$getStorage('account_token')
       }

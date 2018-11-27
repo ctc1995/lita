@@ -24,7 +24,7 @@ export default {
         },
         {
           'pagePath': 'pages/lita-home/main',
-          'text': '利他之家',
+          'text': '线下活动',
           'iconPath': require('../assets/images/lita-home.png'),
           'selectedIconPath': require('../assets/images/lita-home-select.png')
         },

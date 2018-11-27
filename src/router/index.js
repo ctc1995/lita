@@ -29,121 +29,190 @@ export default new Router({
   routes: [
     {
       path: '/',
-      component: init
+      component: init,
+      meta: {
+        title: '利他盈利模式'
+      }
     },
     {
       path: '/init',
       name: 'init',
-      component: init
+      component: init,
+      meta: {
+        title: '利他盈利模式'
+      }
     },
     {
       path: '/index',
       name: 'index',
-      component: index
+      component: index,
+      meta: {
+        title: '利他盈利模式'
+      }
     },
     {
       path: '/lita',
       name: 'lita',
-      component: lita
+      component: lita,
+      meta: {
+        title: '利他-线下课程'
+      }
     },
     {
       path: '/home',
       name: 'home',
-      component: home
+      component: home,
+      meta: {
+        title: '利他-个人中心'
+      }
     },
     {
       path: '/myfund',
       name: 'myfund',
-      component: myfund
+      component: myfund,
+      meta: {
+        title: '利他-我的奖金'
+      }
     },
     {
       path: '/extend',
       name: 'extend',
-      component: extend
+      component: extend,
+      meta: {
+        title: '利他-我的推广'
+      }
     },
     {
       path: '/myintegral',
       name: 'myintegral',
-      component: myintegral
+      component: myintegral,
+      meta: {
+        title: '利他-我的积分'
+      }
     },
     {
       path: '/songshu',
       name: 'songshu',
-      component: songshu
+      component: songshu,
+      meta: {
+        title: '利他-领取书籍'
+      }
     },
     {
       path: '/addition',
       name: 'addition',
-      component: addition
+      component: addition,
+      meta: {
+        title: '利他-添加收货地址'
+      }
     },
     {
       path: '/counter',
       name: 'counter',
-      component: counter
+      component: counter,
+      meta: {
+        title: '利他-298会员'
+      }
     },
     {
       path: '/outline',
       name: 'outline',
-      component: outline
+      component: outline,
+      meta: {
+        title: '利他-线下课程'
+      }
     },
     {
       path: '/daili',
       name: 'daili',
-      component: daili
+      component: daili,
+      meta: {
+        title: '利他-980代理'
+      }
     },
     {
       path: '/shop',
       name: 'shop',
-      component: shop
+      component: shop,
+      meta: {
+        title: '利他-书籍商城'
+      }
     },
     {
       path: '/audiolist/:pageId',
       name: 'audiolist',
       component: audiolist,
-      props: true
+      props: true,
+      meta: {
+        title: '利他-列表'
+      }
     },
     {
       path: '/videodetail/:projectId',
       name: 'videodetail',
       component: videodetail,
-      props: true
+      props: true,
+      meta: {
+        title: '利他-视频'
+      }
     },
     {
       path: '/audiodetail/:projectId',
       name: 'audiodetail',
       component: audiodetail,
-      props: true
+      props: true,
+      meta: {
+        title: '利他-音频'
+      }
     },
     {
       path: '/newdetail/:newId',
       name: 'newdetail',
       component: newdetail,
-      props: true
+      props: true,
+      meta: {
+        title: '利他-新闻'
+      }
     },
     {
       path: '/coursebuy',
       name: 'coursebuy',
-      component: coursebuy
+      component: coursebuy,
+      meta: {
+        title: '利他-已购课程'
+      }
     },
     {
       path: '/collect',
       name: 'collect',
-      component: collect
+      component: collect,
+      meta: {
+        title: '利他-我的收藏'
+      }
     },
     {
       path: '/addmanage',
       name: 'addmanage',
-      component: addmanage
+      component: addmanage,
+      meta: {
+        title: '利他-地址管理'
+      }
     },
     {
       path: '/suggest',
       name: 'suggest',
-      component: suggest
+      component: suggest,
+      meta: {
+        title: '利他-意见反馈'
+      }
     },
     {
       path: '/mymessage',
       name: 'mymessage',
-      component: mymessage
+      component: mymessage,
+      meta: {
+        title: '利他-个人信息'
+      }
     }
   ]
 })

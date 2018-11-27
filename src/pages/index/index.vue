@@ -233,6 +233,7 @@ export default {
     }
   },
   created () {
+    this.$getStorage('cardShow') === null ? this.cardShow = true : this.cardShow = false
     this.userInfo['openid'] = this.$getStorage('openid')
     this.userInfo['headavatar'] = this.$getStorage('headavatar')
     this.userInfo['nickname'] = this.$getStorage('nickname')
@@ -263,20 +264,23 @@ export default {
       this.productList = data.product_list
       this.channelList = data.cat_list
       this.newsList = data.information
-    }).then(err => {
+    }).catch(err => {
       console.log(err)
     })
-    // wx.ready(function () {//eslint-disable-line
-    //   wx.updateAppMessageShareData({//eslint-disable-line
-    //     title: '利他盈利模式', // 分享标题
-    //     desc: '利他盈利模式', // 分享描述
-    //     link: window.location.href, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-    //     success: function () {
-    //       console.log('设置分享成功!')
-    //       // 设置成功
-    //     }
-    //   })
-    // })
+    wx.ready(function () {//eslint-disable-line
+      wx.updateAppMessageShareData({//eslint-disable-line
+        title: '利他盈利模式', // 分享标题
+        desc: '利他盈利模式', // 分享描述
+        link: window.location.href, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+        success: function () {
+          console.log('设置分享成功!')
+          // 设置成功
+        }
+      })
+    })
+  },
+  destroyed () {
+    this.$setStorage('cardShow', false)
   }
 }
 </script>

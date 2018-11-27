@@ -48,7 +48,7 @@ export default {
       mch_id: this.$getStorage('mch_id'),
       mch_key: this.$getStorage('mch_key'),
       prepayId: '',
-      totleFee: 1,
+      totleFee: 298000,
       orderBody: '利他盈利模式-线下课程',
       tag: false,
       showCard: false,
@@ -139,7 +139,16 @@ export default {
       this.$post('Login/wx_unifiedorder', {'xml': this.$util.js2xml(data)}).then(res => {
         // console.log(res.data)
         this.prepayId = res.data.split('<prepay_id><![CDATA[')[1].split(']]></prepay_id>')[0]
-        this.pay()
+        if (typeof WeixinJSBridge == "undefined"){//eslint-disable-line
+          if ( document.addEventListener ) {//eslint-disable-line
+            document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false)//eslint-disable-line
+          } else if (document.attachEvent) {//eslint-disable-line
+            document.attachEvent('WeixinJSBridgeReady', onBridgeReady)//eslint-disable-line
+            document.attachEvent('onWeixinJSBridgeReady', onBridgeReady)//eslint-disable-line
+          }
+        } else {
+          this.pay()
+        }
       })
     },
     // 调起支付
@@ -164,6 +173,28 @@ export default {
         },
         function (res) {
           if (res.err_msg == 'get_brand_wcpay_request:ok') {//eslint-disable-line
+            let rankData = {
+              'userid': that.$getStorage('userId'),
+              'type': '3',
+              'account_token': that.$getStorage('account_token')
+            }
+            that.http.post(undefined, 'user/upgrade_member', rankData).then(res => {
+              if (res.data.code === 1) {
+                that.$Message({
+                  showClose: true,
+                  message: '支付成功！代理身份生效',
+                  type: 'success'
+                })
+                that.$setStorage('rank_id', 3)
+                that.$setStorage('rankName', '代理人')
+              } else {
+                that.$Message({
+                  showClose: true,
+                  message: res.data.msg + ' 请联系管理员',
+                  type: 'error'
+                })
+              }
+            })
             console.log(res)
             let msg = `线下课程已付款客户---订单号：${that.prepayId} 姓名：${that.form.phone} 电话：${that.form.name}`
             let data = {
@@ -186,6 +217,9 @@ export default {
         }
       )
     }
+  },
+  created () {
+    this.$wxJS(location.href.split('#')[0])
   }
 }
 </script>

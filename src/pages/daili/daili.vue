@@ -60,9 +60,18 @@ export default {
       // console.log(this.$util.js2xml(data))
       // console.log('end')
       this.$post('Login/wx_unifiedorder', {'xml': this.$util.js2xml(data)}).then(res => {
-        // console.log(res.data)
+        console.log(res.data)
         this.prepayId = res.data.split('<prepay_id><![CDATA[')[1].split(']]></prepay_id>')[0]
-        this.pay()
+        if (typeof WeixinJSBridge == "undefined"){//eslint-disable-line
+          if ( document.addEventListener ) {//eslint-disable-line
+            document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false)//eslint-disable-line
+          } else if (document.attachEvent) {//eslint-disable-line
+            document.attachEvent('WeixinJSBridgeReady', onBridgeReady)//eslint-disable-line
+            document.attachEvent('onWeixinJSBridgeReady', onBridgeReady)//eslint-disable-line
+          }
+        } else {
+          this.pay()
+        }
       })
     },
     // 调起支付
@@ -100,6 +109,7 @@ export default {
                   type: 'success'
                 })
                 that.$setStorage('rank_id', 3)
+                that.$setStorage('rankName', '代理人')
               } else {
                 that.$Message({
                   showClose: true,
@@ -124,14 +134,15 @@ export default {
       this.rankid = this.$getStorage('rank_id')
       if (this.rankid == 2) {//eslint-disable-line
         this.dailiFee = '￥' + res.data.data.daili_fee - res.data.data.member_fee + '/会员折扣'
-        this.totleFee = this.dailiFee * 100
+        this.totleFee = res.data.data.daili_fee * 100
       } else if (this.rankid == 3) {//eslint-disable-line
         this.dailiFee = '已是代理身份'
       } else if (this.rankid == 1) {//eslint-disable-line
         this.dailiFee = '￥' + res.data.data.daili_fee
-        this.totleFee = this.dailiFee * 100
+        this.totleFee = res.data.data.daili_fee * 100
       }
     })
+    this.$wxJS(location.href.split('#')[0])
   }
 }
 </script>

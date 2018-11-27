@@ -24,6 +24,7 @@
           </div>
           <div class="video-list">
             <div class="video-item"
+              :class="{'active': index == selIndex}"
               v-for="(videoItem, index) in video.product_sku"
               :key="index"
               @click="changeVideo(videoItem.free, videoItem.link, index)">
@@ -58,7 +59,8 @@ export default {
       showShopCard: false,
       // 用户身份
       userLevel: 1,
-      playerOptions: {}
+      playerOptions: {},
+      selIndex: 0
     }
   },
   computed: {
@@ -84,14 +86,18 @@ export default {
       // this.videoContext.stop()
       if (free == 1) {//eslint-disable-line
         this.videoSrc = src
+        this.playerOptions.sources[0]['src'] = this.videoSrc
         console.log('谢谢收看！' + this.videoSrc)
+        this.selIndex = index
       } else {
         if (this.userLevel === 1) {
           this.toggleshopCard()
           console.log('付费视频，请购买！')
         } else {
           this.videoSrc = src
+          this.playerOptions.sources[0]['src'] = this.videoSrc
           console.log('谢谢收看！' + this.videoSrc)
+          this.selIndex = index
         }
       }
     },
@@ -100,8 +106,8 @@ export default {
     }
   },
   beforeCreate () {
-    // this.userLevel = this.$getStorage('rank_id')
-    this.userLevel = 1
+    this.userLevel = this.$getStorage('rank_id')
+    // this.userLevel = 1
   },
   created () {
     // this.projectId = this.$root.$mp.query.projectId
@@ -115,7 +121,8 @@ export default {
         width: window.innerWidth,
         height: window.innerWidth * 0.57319,
         autoplay: true,
-        language: 'en',
+        language: 'zh-CN',
+        preload: 'auto',
         playbackRates: [0.7, 1.0, 1.5, 2.0],
         sources: [{
           type: 'video/mp4',
@@ -124,7 +131,8 @@ export default {
           // webm
           // src: 'https://cdn.theguardian.tv/webM/2015/07/20/150716YesMen_synd_768k_vp8.webm'
         }],
-        poster: this.video.cover
+        poster: this.video.cover,
+        notSupportedMessage: '此视频暂无法播放，请稍后再试'
       }
     })
   }

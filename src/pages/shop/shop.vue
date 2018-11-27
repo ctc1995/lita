@@ -12,7 +12,7 @@
         <img :src="imgItem.src" class="slide-image"/>
       </el-carousel-item>
     </el-carousel>
-    <p class="title">热销</p>
+    <!-- <p class="title">热销</p>
     <div class="product-list">
       <div class="product-item" v-for="(item, index) in productLists" :key="index" @click="getDetail()">
         <div class="product-image">
@@ -24,6 +24,17 @@
           <span>原价 ￥{{item.priceD}}</span>
         </p>
       </div>
+    </div> -->
+    <img src="http://54yym.com/lsfazrhrvbth4lt.jpg" class="shop-bg" alt="线下活动" @click="showCardFunc(true)">
+    <div class="message" v-if="showCard">
+      <div class="mask" @click="showCardFunc(false)"></div>
+      <div class="form">
+        <input id="name" placeholder="输入您的名字" auto-focus v-model="name"/>
+        <input id="phone"  maxlength="11" placeholder="输入您的手机号码"  v-model="phone"/>
+        <p class="tip">在线支付功能由于受限，暂不支持，请提供您的信息，我们将联系您！</p>
+        <!-- <button type="primary" size="mini" @click="postMsg()">提交信息</button> -->
+        <el-button type="primary" size="mini" @click="postMsg()">提交信息</el-button>
+      </div>
     </div>
   </div>
 </template>
@@ -33,6 +44,9 @@
 export default {
   data () {
     return {
+      name: '',
+      phone: '',
+      showCard: false,
       swiperImgs: JSON.parse(this.$getStorage('bannerList')),
       productLists: [
         {
@@ -90,6 +104,32 @@ export default {
     getDetail () {
       // let url = '../product-detail/main'
       // wx.navigateTo({ url })
+    },
+    showCardFunc (bol, tag) {
+      this.showCard = bol
+      this.tag = tag
+    },
+    postMsg () {
+      if (this.tag) {
+        this.unifiedorder()
+      } else {
+        let msg = `购买书籍意向客户---姓名：${this.phone} 电话：${this.name}`
+        let data = {
+          'content': msg,
+          'account_token': this.$util.getStorage('account_token'),
+          'userid': this.$util.getStorage('userId')
+        }
+        this.http.post(undefined, 'user/feedback', JSON.parse(JSON.stringify(data))).then(res => {
+          console.log(res.data)
+          if (res.data.code === 1) {
+            this.showCard = false
+            this.$Message({
+              message: '恭喜你，这是一条成功消息',
+              type: 'success'
+            })
+          }
+        })
+      }
     }
   },
   created () {
@@ -99,6 +139,9 @@ export default {
 </script>
 
 <style lang="scss">
+.shop-bg{
+  width: 100vw;
+}
 .slide-image{
   width: 100%;
   height: 100%;
@@ -161,6 +204,47 @@ export default {
         color: #999;
         text-decoration: line-through;
       }
+    }
+  }
+}
+
+.message{
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position:fixed;
+  top:0;
+  left:0;
+  .mask{
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0,0,0,.3);
+    position: absolute;
+    z-index: 1;
+  }
+  .form{
+    background-color: #ffffff;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    padding: 2.666vw;
+    box-sizing: border-box;
+    width:60vw;
+    text-align:center;
+    z-index: 2;
+    .tip{
+      font-size:12px;
+      text-align:start;
+      color:red;
+    }
+    input{
+      margin:2.4vw 0;
+      border-radius:3px;
+      border:1px solid #eee;
+      padding:1.333vw 2.666vw;
+      font-size:14px;
     }
   }
 }

@@ -21,9 +21,10 @@
             <div class="audio-list-title">音频列表</div>
             <div class="audio-list">
               <div class="audio-item"
+              :class="{'active': index == selIndex}"
                v-for="(audioItem, index) in audio.product_sku"
                :key="index"
-               @click="changeAudio(audioItem.free, audioItem.link)">
+               @click="changeAudio(audioItem.free, audioItem.link, index)">
                 <p :class="audioItem.free == 1 || userLevel != 1 ?'free':''">
                   <span class="audio-item-name">{{audioItem.name}}</span>
                   <!-- <span class="audio-item-name">{{audioItem.audioTime}}</span> -->
@@ -57,7 +58,8 @@ export default {
       isPlay: true,
       isStarImg: require('../../assets/images/star.png'),
       // 用户身份
-      userLevel: 1
+      userLevel: 1,
+      selIndex: 0
     }
   },
   components: {
@@ -91,11 +93,12 @@ export default {
       })
     },
     // 切换音频
-    changeAudio (free, src) {
+    changeAudio (free, src, index) {
       if (free == 1) { //eslint-disable-line
         this.creatAudio(src)
         this.innerAudioContext.autoplay = true
         this.isPlay = false
+        this.selIndex = index
         console.log('谢谢收听！', src)
       } else {
         if (this.userLevel === 1) {
@@ -105,6 +108,7 @@ export default {
           this.creatAudio(src)
           this.innerAudioContext.autoplay = true
           this.isPlay = false
+          this.selIndex = index
           console.log('谢谢收听！', src)
         }
       }

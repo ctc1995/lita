@@ -9,14 +9,14 @@ export default {
   data () {
     return {
       // showCard: false,
-      totleFee: 0,
+      totleFee: this.$getStorage('local_postage'),
       prepayId: '',
       orderBody: '利他书籍--邮费'
     }
   },
   methods: {
     getUrl () {
-      this.$MessageBox.confirm('填写收货地址，支付邮费领取书籍', '提交信息', {
+      this.$MessageBox.confirm(`填写收货地址，支付${this.totleFee}元邮费领取书籍`, '提交信息', {
         customClass: 'box',
         confirmButtonText: '确定',
         cancelButtonText: '取消',

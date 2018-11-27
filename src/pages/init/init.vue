@@ -1,11 +1,11 @@
 <template>
   <div class="getInfo">
     <div class="mask"></div>
-    <div class="getInfo-card" v-if="show">
+    <!-- <div class="getInfo-card" v-if="show">
       <p class="h1">欢迎登录利他盈利模式</p>
-      <p class="h2">使用小程序需要先授权登录获取用户信息</p>
+      <p class="h2">使用公众号需要先授权登录获取用户信息</p>
       <button class="weui-btn" @click="getUserInfo()">授权登录</button>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -25,10 +25,15 @@ export default {
       window.location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxfd8f2476226e8867&redirect_uri=http%3A%2F%2Fysw.arwli.top/&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect'
     },
     // 注册
-    reg () {
+    reg (scene = null) {
       this.userInfo['openid'] = this.$getStorage('openid')
       this.userInfo['headavatar'] = this.$getStorage('headavatar')
       this.userInfo['nickname'] = this.$getStorage('nickname')
+      if (scene) {
+        this.userInfo['referee_id'] = scene
+      } else {
+        console.log(false)
+      }
       // 用户注册
       this.$post('Login/reg', this.userInfo).then((res) => {
         console.log(res)
@@ -70,55 +75,71 @@ export default {
     }
   },
   created () {
-    this.$setStorage('account_token', 'fbb6555fc3268f4f4dc58aa8c87fc37d')
-    this.$setStorage('local_postage', 9)
-    this.$setStorage('appid', 'wxfd8f2476226e8867')
-    this.$setStorage('userid', '73')
-    this.$setStorage('rank_id', 1)
-    this.$setStorage('daili_fee', 0.01)
-    this.$setStorage('member_fee', 0.01)
-    this.$setStorage('mch_id', '1516696021')
-    this.$setStorage('mch_key', 'taojiamintiandenghui199292408270')
-    this.$setStorage('openid', 'odT745nH-xb2dNVrW7SyeFR5ROOI')
-    this.$setStorage('nickname', 'ଘଓ')
-    this.$setStorage('headavatar', 'http://thirdwx.qlogo.cn/mmopen/vi_32/HwUXX5POm5p8br65x42xEHCvLxuJLAxe3zBAnHjyKEGGEIrLFSeXkaU5h7yWib0GwLKrLQex8EffK7rLLFgMuTA/132')
-    this.$router.replace({'path': 'index'})
-    // this.wxCode = window.location.search.replace('?', '').split('&')[0].split('=')[1]
-    // console.log(this.wxCode)
-    // if( this.wxCode == undefined ) {//eslint-disable-line
-    //   this.show = true
-    //   window.location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxfd8f2476226e8867&redirect_uri=http%3A%2F%2Fysw.arwli.top/&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect'
-    // } else {
-    //   this.show = false
-    // }
-    // // 获取系统参数
-    // this.$get('login/get_company').then(res => {
-    //   console.log(res.data.data)
-    //   let obj = res.data.data
-    //   this.$setStorage('local_postage', obj.local_postage)
-    //   this.$setStorage('appid', obj.mpappid)
-    //   this.$setStorage('mch_id', obj.mch_id)
-    //   this.$setStorage('daili_fee', obj.daili_fee)
-    //   this.$setStorage('member_fee', obj.member_fee)
-    //   this.$setStorage('mch_key', obj.mch_key)
-    //   // this.totleFee = 1
-    //   this.totleFee = res.data.data.local_postage * 100
-    // }).catch(err => {
-    //   console.log(err)
-    // })
-    // // 通过后台获取用户信息
-    // this.$get(`login/wxmp_token?code=${this.wxCode}`).then(res => {
-    //   this.loading = this.$loading({
-    //     lock: true,
-    //     text: '数据加载中',
-    //     spinner: 'el-icon-loading',
-    //     background: 'rgba(0, 0, 0, 0.7)'
-    //   })
-    //   this.$setStorage('openid', res.data['openid'])
-    //   this.$setStorage('nickname', res.data['nickname'])
-    //   this.$setStorage('headavatar', res.data['headimgurl'])
-    //   this.reg()
-    // })
+    if (location.href.split('#')[0].indexOf('http://localhost:') != -1) {//eslint-disable-line
+      this.$setStorage('account_token', 'fbb6555fc3268f4f4dc58aa8c87fc37d')
+      this.$setStorage('local_postage', 9)
+      this.$setStorage('appid', 'wxfd8f2476226e8867')
+      this.$setStorage('userid', '73')
+      this.$setStorage('rank_id', 1)
+      this.$setStorage('daili_fee', 0.01)
+      this.$setStorage('member_fee', 0.01)
+      this.$setStorage('mch_id', '1516696021')
+      this.$setStorage('mch_key', 'taojiamintiandenghui199292408270')
+      this.$setStorage('openid', 'odT745nH-xb2dNVrW7SyeFR5ROOI')
+      this.$setStorage('nickname', 'ଘଓ')
+      this.$setStorage('headavatar', 'http://thirdwx.qlogo.cn/mmopen/vi_32/HwUXX5POm5p8br65x42xEHCvLxuJLAxe3zBAnHjyKEGGEIrLFSeXkaU5h7yWib0GwLKrLQex8EffK7rLLFgMuTA/132')
+      // this.$router.replace({'path': 'index'})
+      let hrefSearch = window.location.search.replace('?', '').split('&')[0].split('=')[1]
+      this.reg(hrefSearch)
+      console.log(hrefSearch)
+    } else {
+      let hrefSearch = window.location.search.replace('?', '')
+      if (hrefSearch.indexOf('scene') != -1) { //eslint-disable-line
+        if (hrefSearch.indexOf('code') != -1) {//eslint-disable-line
+          this.wxCode = hrefSearch.split('&')[1].split('=')[1]
+        } else {
+          let scene = hrefSearch.split('=')[1]
+          window.location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxfd8f2476226e8867&redirect_uri=http%3A%2F%2Fysw.arwli.top/?scene=${scene}&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect`
+        }
+      } else {
+        if ( hrefSearch == '' ) {//eslint-disable-line
+          this.show = true
+          window.location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxfd8f2476226e8867&redirect_uri=http%3A%2F%2Fysw.arwli.top&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect'
+        } else {
+          this.show = false
+          this.wxCode = hrefSearch.split('&')[0].split('=')[1]
+        }
+        console.log(this.wxCode)
+      }
+      // 获取系统参数
+      this.$get('login/get_company').then(res => {
+        console.log(res.data.data)
+        let obj = res.data.data
+        this.$setStorage('local_postage', obj.local_postage)
+        this.$setStorage('appid', obj.mpappid)
+        this.$setStorage('mch_id', obj.mch_id)
+        this.$setStorage('daili_fee', obj.daili_fee)
+        this.$setStorage('member_fee', obj.member_fee)
+        this.$setStorage('mch_key', obj.mch_key)
+        // this.totleFee = 1
+        this.totleFee = res.data.data.local_postage * 100
+      }).catch(err => {
+        console.log(err)
+      })
+      // 通过后台获取用户信息
+      this.$get(`login/wxmp_token?code=${this.wxCode}`).then(res => {
+        this.loading = this.$loading({
+          lock: true,
+          text: '数据加载中',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.7)'
+        })
+        this.$setStorage('openid', res.data['openid'])
+        this.$setStorage('nickname', res.data['nickname'])
+        this.$setStorage('headavatar', res.data['headimgurl'])
+        this.reg(hrefSearch.split('&')[0].split('=')[1])
+      })
+    }
   }
 }
 </script>

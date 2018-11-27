@@ -109,6 +109,7 @@ export default {
                   type: 'success'
                 })
                 that.$setStorage('rank_id', 2)
+                that.$setStorage('rankName', '会员')
               } else {
                 that.$Message({
                   showClose: true,
@@ -132,6 +133,12 @@ export default {
       // this.totleFee = 1
       this.totleFee = res.data.data.member_fee * 100
     })
+    this.$wxJS(location.href.split('#')[0])
+    // this.$wx.error(function (res) {
+    //   // config信息验证失败会执行error函数，如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
+    //   console.log('wx初始化失败！')
+    //   console.log(res)
+    // })
   }
 }
 </script>
